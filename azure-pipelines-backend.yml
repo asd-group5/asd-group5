@@ -1,0 +1,61 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  system.debug: true  # Enable verbose logging
+
+strategy:
+  matrix:
+    Python312:
+      PYTHON_VERSION: '3.12'
+  maxParallel: 3
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(PYTHON_VERSION)'
+    architecture: 'x64'
+
+- script: |
+    echo "PYTHON_VERSION=$(PYTHON_VERSION)"
+    echo "projectRoot=$(projectRoot)"
+  displayName: 'Debug Variable Output'
+
+- task: PythonScript@0
+  displayName: 'Export project path'
+  inputs:
+    scriptSource: 'inline'
+    script: |
+      """Search all subdirectories for `manage.py`."""
+      from glob import iglob
+      from os import path
+      # Python >= 3.5
+      manage_py = next(iglob(path.join('**', 'manage.py'), recursive=True), None)
+      if not manage_py:
+          raise SystemExit('Could not find a Django project')
+      project_location = path.dirname(path.abspath(manage_py))
+      print('Found Django project in', project_location)
+      print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
+
+- script: |
+    python -m pip install --upgrade pip setuptools wheel
+    pip install -r $(projectRoot)/requirements.txt
+    pip install unittest-xml-reporting
+  displayName: 'Install prerequisites'
+
+- script: |
+    pushd '$(projectRoot)'
+    python -m pip install django  
+    python manage.py check  
+    python manage.py test --testrunner xmlrunner.extra.djangotestrunner.XMLTestRunner --no-input  
+  displayName: 'Run Tests'
+  workingDirectory: '$(projectRoot)'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: "**/TEST-*.xml"
+    testRunTitle: 'Python $(PYTHON_VERSION)'
+  condition: succeededOrFailed()
