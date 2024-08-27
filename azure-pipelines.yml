@@ -13,6 +13,7 @@ steps:
 - task: Npm@1
   displayName: npm install
   inputs:
+    workingDir: 'frontend'
     command: install
 
 - task: Npm@1
