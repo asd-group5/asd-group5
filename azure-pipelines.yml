@@ -10,6 +10,14 @@ steps:
     versionSpec: '18.17.0'
   displayName: 'Install Node.js'
 
+- task: Npm@1
+  inputs:
+    workingDir: 'frontend'
+    command: 'custom'
+    customCommand: 'run test'
+  displayName: 'npm run test'
+
+
 - script: |
     cd frontend
     npm install
