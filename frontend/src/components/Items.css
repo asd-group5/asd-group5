@@ -1,0 +1,6 @@
+.itemCard{
+    display: flex;
+    flex-direction: column;
+    border-style: solid;
+    border-radius: 5px;
+}
