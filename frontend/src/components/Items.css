@@ -1,6 +1,7 @@
 .itemCard{
     display: flex;
     flex-direction: column;
+    gap: 3px;
     border-style: solid;
     border-radius: 5px;
 }

@@ -1,7 +1,10 @@
 import './Items.css'
+import Customisation from './Customisation';
+import { useState } from 'react';
 
-const Items = ({itemName, totalPrice, index, orders, setOrders}) =>{
-
+const Items = ({itemName, totalPrice, index, orders, setOrders, custom}) =>{
+    const [showCustom, setShowCustom] = useState(false);
+    
     const handleAddQuanity = () =>{
         let temp = orders.concat(orders[index]);
         setOrders(temp);
@@ -15,6 +18,9 @@ const Items = ({itemName, totalPrice, index, orders, setOrders}) =>{
         setOrders(temp);
     }
 
+    const handleCustomise = () => {
+        setShowCustom(!showCustom);
+    }
 
 return(
     <div className='itemCard'>
@@ -32,7 +38,15 @@ return(
                 handleRemove();
             }}>-</button>
         </div>
-
+        <div>
+            <button onClick={handleCustomise}>
+                {showCustom ? 'Hide Customisation' : 'View Customisation'}
+            </button>
+        </div>
+        {showCustom ? 
+            <div>
+                <Customisation custom={custom}/>
+            </div> : null}
         ${totalPrice}
     </div>
 )

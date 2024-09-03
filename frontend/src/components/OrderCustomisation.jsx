@@ -70,6 +70,7 @@ const OrderCustomisation = () => {
                             index={index}
                             orders={orders} 
                             setOrders={updateOrder}
+                            custom={value.custom}
                         />
                     )
                 })}
@@ -79,7 +80,6 @@ const OrderCustomisation = () => {
             </div>
         </div>
     )
-
 }
 
 export default OrderCustomisation
