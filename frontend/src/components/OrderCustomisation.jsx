@@ -13,15 +13,15 @@ const OrderCustomisation = () => {
         "totalPrice": 10,
         "custom": {
             "tomato": {
-                "quantity": 0,
+                "checked": false,
                 "price": 1
             },
             "lettuce": {
-                "quantity": 0,
+                "checked": false,
                 "price": 2
             },
             "sauce": {
-                "quantity": 0,
+                "checked": false,
                 "price": 0.5
             }
         }
@@ -33,15 +33,41 @@ const OrderCustomisation = () => {
         "totalPrice": 4.5,
         "custom": {
             "sauce": {
-                "quantity": 1,
+                "checked": true,
                 "price": 0.5
             }
         }
+    },
+    {
+        "itemID": 3,
+        "name": "Red Bull",
+        "basePrice": 2,
+        "totalPrice": 2,
     }
 ]) 
 
+//Might add this later
+/* "required": {
+    "name": "Meal selection",
+    "description": "Comes with drink and chips",
+    "selected": 2,
+    "options": [
+        {
+            "option_name": "Large Meal",
+            "price": 12
+        },
+        {
+            "option_name": "Medium Meal",
+            "price": 10
+        },
+        {
+            "option_name": "No Meal",
+            "price": 0
+        }
+    ]
+} */
+
     const updateOrder = (order) =>{
-        console.log("test");
         setOrders(order);
     }
 
@@ -71,6 +97,7 @@ const OrderCustomisation = () => {
                             orders={orders} 
                             setOrders={updateOrder}
                             custom={value.custom}
+                            required={value.required}
                         />
                     )
                 })}

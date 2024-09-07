@@ -2,7 +2,7 @@ import './Items.css'
 import Customisation from './Customisation';
 import { useState } from 'react';
 
-const Items = ({itemName, totalPrice, index, orders, setOrders, custom}) =>{
+const Items = ({itemName, totalPrice, index, orders, setOrders, custom, required}) =>{
     const [showCustom, setShowCustom] = useState(false);
     
     const handleAddQuanity = () =>{
@@ -22,6 +22,25 @@ const Items = ({itemName, totalPrice, index, orders, setOrders, custom}) =>{
         setShowCustom(!showCustom);
     }
 
+    const updateCart = (items) => {
+        console.log(orders);
+        let temp = [...orders];
+        temp[index]['custom'] = items;
+        temp[index]['totalPrice'] = temp[index]['basePrice'] + getNewPrice(items)
+        console.log(temp);
+        setOrders(temp);
+    }
+
+    const getNewPrice = (items) => {
+        let newPrice = 0;
+        for (const property in items) {
+            if(items[property]['checked']){
+                newPrice += items[property]['price'];
+            }
+        }
+        return(newPrice);
+    }
+
 return(
     <div className='itemCard'>
         <div className='itemDetails'>
@@ -32,20 +51,27 @@ return(
             Quantity
             <button onClick={() => {
                 handleAddQuanity();
-            }}>+</button>
+            }}>Add Item</button>
             {/* <input type='number'/> */}
             <button onClick={() => {
                 handleRemove();
-            }}>-</button>
+            }}>Remove Item</button>
         </div>
+            {(required) ? 
+                <div>
+                    {required.name}
+                </div> : null}
         <div>
-            <button onClick={handleCustomise}>
-                {showCustom ? 'Hide Customisation' : 'View Customisation'}
-            </button>
+            {(custom) ? 
+                <button onClick={handleCustomise}>
+                    {showCustom ? 'Hide Customisation' : 'View Customisation'}
+                </button> : null }
         </div>
         {showCustom ? 
             <div>
-                <Customisation custom={custom}/>
+                <Customisation 
+                    custom={custom} 
+                    updateCart={updateCart}/>
             </div> : null}
         ${totalPrice}
     </div>
