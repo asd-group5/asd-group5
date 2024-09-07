@@ -10,8 +10,36 @@ steps:
     versionSpec: '18.17.0'
   displayName: 'Install Node.js'
 
+- task: Npm@1
+  displayName: npm install
+  inputs:
+    workingDir: 'frontend'
+    command: install
+
+- task: Npm@1
+  inputs:
+    workingDir: 'frontend'
+    command: 'custom'
+    customCommand: 'run test'
+  displayName: 'npm run test'
+
+
 - script: |
     cd frontend
     npm install
     npm run build
   displayName: 'npm install and build'
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.SourcesDirectory)/frontend/dist'
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildID).zip'
+    replaceExistingArchive: true
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
