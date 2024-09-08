@@ -44,11 +44,13 @@ const Items = ({itemName, totalPrice, index, orders, setOrders, custom, required
 return(
     <div className='itemCard'>
         <div className='itemDetails'>
+            <h3>
             {itemName}
+            </h3>
         </div>
 
-        <div>
-            Quantity
+        <div className='quantity'>
+            
             <button onClick={() => {
                 handleAddQuanity();
             }}>Add Item</button>
@@ -61,19 +63,24 @@ return(
                 <div>
                     {required.name}
                 </div> : null}
-        <div>
+        <div className='buttonContainer'>
             {(custom) ? 
                 <button onClick={handleCustomise}>
                     {showCustom ? 'Hide Customisation' : 'View Customisation'}
                 </button> : null }
         </div>
         {showCustom ? 
-            <div>
+            <div className='customisationContainer'>
+                <h4>
+                    Customise {itemName}
+                </h4>
                 <Customisation 
                     custom={custom} 
                     updateCart={updateCart}/>
             </div> : null}
-        ${totalPrice}
+        <strong>
+            ${totalPrice}
+        </strong>
     </div>
 )
 

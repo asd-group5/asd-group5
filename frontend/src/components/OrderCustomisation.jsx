@@ -86,7 +86,7 @@ const OrderCustomisation = () => {
     return(
         <div>
             <h1>Current Order</h1>
-            Edit
+
             <div className="orders">
                 {orders.map((value, index) =>{
                     return(
@@ -103,7 +103,12 @@ const OrderCustomisation = () => {
                 })}
             </div>
             <div>
-                Total: ${total}
+                <h4>
+                    Total: ${total}
+                </h4>
+                <button>
+                    Submit Order
+                </button>
             </div>
         </div>
     )
