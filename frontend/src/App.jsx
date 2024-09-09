@@ -8,6 +8,7 @@ import Register from "./pages/Register"
 import Header from "./pages/Header"
 import PaymentPage from './pages/PaymentPage';
 import AddressPage from './pages/AddressPage';
+import OrderCustomisation from './components/OrderCustomisation';
 
 function AppContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -69,6 +70,10 @@ function AppContent() {
       </Route>
       <Route path="login" element={<Login setIsLoggedIn={setIsLoggedIn} setUsername={setUsername} />} />
       <Route path="register" element={<Register />} />
+      <Route 
+            path="/Customisation" 
+            element={isLoggedIn ? <OrderCustomisation/> : <Login/>}
+      />
     </Routes>
   );
 }
