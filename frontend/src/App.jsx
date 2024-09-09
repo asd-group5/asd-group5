@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-// import './App.css'
-import { Routes, Route, BrowserRouter } from "react-router-dom";
-import Home from  "./pages/Home"
 import LoginSignup from './pages/LoginSignup';
-=======
 import './App.css'
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
@@ -14,7 +9,6 @@ import Register from "./pages/Register"
 import Header from "./pages/Header"
 import PaymentPage from './pages/PaymentPage';
 import AddressPage from './pages/AddressPage';
->>>>>>> d8fd1ef296b2800774cf976ac7922bf1eeaba101
 
 function AppContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
