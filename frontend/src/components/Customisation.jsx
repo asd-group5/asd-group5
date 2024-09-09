@@ -6,19 +6,9 @@ const Customisation = ({custom, updateCart, index}) => {
     const [update, setUpdate] = useState(true);
 
     const handleCheck = (value) => {
-        /* let temp = JSON.parse(JSON.stringify(items));
-        temp[value]['checked'] = !temp[value]['checked'];
-
-        setUpdate(Object.keys(custom)
-            .every((key) => custom[key]['checked'] === temp[key]['checked'])); */
         let temp = structuredClone(items);
         
         temp[value]['checked'] = !temp[value]['checked'];
-        if(custom === temp){
-            console.log("true!");
-        }else{
-            console.log("false!");
-        }
 
         setUpdate(temp.every((element, index) => custom[index]['checked'] == element['checked']));
 
@@ -34,7 +24,7 @@ const Customisation = ({custom, updateCart, index}) => {
         <div>
             {items.map((item, index) => {
                 return(
-                    <div className="customisationOption">
+                    <div className="customisationOption" key={index}>
                         <label>
                             ${item['price']} {item['name'][0].toUpperCase() + item['name'].slice(1)}
                         </label>
