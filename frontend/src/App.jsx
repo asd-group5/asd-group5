@@ -1,3 +1,4 @@
+// App.jsx
 import Home from "./pages/Home";
 import LoginSignup from './pages/LoginSignup';
 import React, { useState, useEffect } from 'react';
@@ -35,6 +36,7 @@ function AppContent() {
   };
 
   useEffect(() => {
+    // Check if user is logged in whenever the component mounts
     checkLoggedInUser();
   }, []);
 
@@ -53,7 +55,7 @@ function AppContent() {
         localStorage.removeItem("refreshToken");
         setIsLoggedIn(false);
         setUsername("");
-        console.log("Log out successful!f");
+        console.log("Log out successful!");
         navigate("/");
       }
     } catch (error) {
@@ -63,10 +65,11 @@ function AppContent() {
 
   return (
     <Routes>
-      <Route path="/" element={<LoginSignup isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} setUsername={setUsername}/>}/>
+      <Route path="/"element={<LoginSignup isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} setUsername={setUsername}/>}/>
       <Route path="home" element={<Home isLoggedIn={isLoggedIn} username={username} handleLogout={handleLogout} checkLoggedInUser={checkLoggedInUser}/>}/>
       <Route path="payment" element={<PaymentPage />} />
       <Route path="address" element={<AddressPage />} />
+      <Route path="/Customisation" element={isLoggedIn ? <OrderCustomisation/> : <LoginSignup/>} />
     </Routes>
   );
 }
