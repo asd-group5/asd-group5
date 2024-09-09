@@ -1,10 +1,6 @@
 import React, { useEffect } from 'react';
 
-export default function Home({ isLoggedIn, username, handleLogout, checkLoggedInUser }) {
-  useEffect(() => {
-    checkLoggedInUser();
-  }, [checkLoggedInUser]);
-
+export default function Home({ isLoggedIn, username, handleLogout }) {
   if (!isLoggedIn) {
     return <div>Please log in to view this page.</div>;
   }
