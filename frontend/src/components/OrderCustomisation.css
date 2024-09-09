@@ -1,0 +1,20 @@
+.customUpdate{
+    margin-top: 15px;
+}
+.customUpdate:hover:disabled{
+    cursor: default !important;
+    outline: none;
+    border-color: transparent !important;
+}
+
+.orders{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.orders>*:not(:last-child) {
+    border-bottom: solid;
+    padding-bottom: 15px;
+    border-width: 1px;
+  }
