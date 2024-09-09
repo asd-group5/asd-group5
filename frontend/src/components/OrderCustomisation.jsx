@@ -92,7 +92,7 @@ const OrderCustomisation = () => {
     }, [orders])
 
     return(
-        <div>
+        <div className="customisationContainer">
             <h1>Current Order</h1>
 
             <div className="orders">
@@ -112,6 +112,7 @@ const OrderCustomisation = () => {
                 })}
             </div>
             <div>
+                <hr/>
                 <h4>
                     Total: ${total}
                 </h4>

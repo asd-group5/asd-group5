@@ -53,11 +53,11 @@ return(
             
             <button onClick={() => {
                 handleAddQuanity();
-            }}>Add Item</button>
+            }}>Add</button>
             {/* <input type='number'/> */}
             <button onClick={() => {
                 handleRemove();
-            }}>Remove Item</button>
+            }}>Remove</button>
         </div>
             {(required) ? 
                 <div>

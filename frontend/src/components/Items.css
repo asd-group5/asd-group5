@@ -1,10 +1,9 @@
 .itemCard{
     display: grid;
-    grid-template-areas: "a . b b b"
-                         "a . c c c"
-                         "a . d d d"
-                         "a e e e e";
-    gap: 5px;
+    grid-template-areas: "a b b b b e"
+                         "a c c c c e"
+                         "a d d d d e";
+    gap: 10px;
     /* border-style: solid;
     border-radius: 5px; */
 }
@@ -15,10 +14,15 @@
 }
 
 .quantity {
+    display: flex;
     grid-area: b;
+    justify-content: flex-end;
+    gap: 10px;
 }
 
 .buttonContainer{
+    display: flex;
+    justify-content: flex-end;
     grid-area: c;
 }
 
