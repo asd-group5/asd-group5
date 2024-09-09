@@ -1,30 +1,51 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
+from django.views import View
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.http import JsonResponse
 
-class AddAddressView(APIView):
-    def post(self, request):
-        # 주소 추가 로직
-        # 요청 데이터에서 주소 정보 가져오기
-        # 주소를 데이터베이스에 저장
-        return Response({'message': 'Address added successfully'}, status=status.HTTP_201_CREATED)
 
-class EditAddressView(APIView):
-    def put(self, request, address_id):
-        # 주소 수정 로직
-        return Response({'message': 'Address updated successfully'}, status=status.HTTP_200_OK)
+class AddressListView(ListView):
+    def get(self, request, *args, **kwargs):
+        pass
 
-class DeleteAddressView(APIView):
-    def delete(self, request, address_id):
-        # 주소 삭제 로직
-        return Response({'message': 'Address deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
-class ListAddressesView(APIView):
-    def get(self, request):
-        # 저장된 주소 목록 가져오기
-        return Response({'addresses': []}, status=status.HTTP_200_OK)
+class AddressAddView(CreateView):
+    def post(self, request, *args, **kwargs):
+        pass
 
-class SetDefaultAddressView(APIView):
-    def post(self, request, address_id):
-        # 기본 주소 설정 로직
-        return Response({'message': 'Default address set successfully'}, status=status.HTTP_200_OK)
+
+class AddressUpdateView(UpdateView):
+    def put(self, request, pk, *args, **kwargs):
+        pass
+
+
+class AddressDeleteView(DeleteView):
+    def delete(self, request, pk, *args, **kwargs):
+        pass
+
+
+class AddressSetDefaultView(View):
+    def post(self, request, pk, *args, **kwargs):
+        pass
+
+
+class AddressValidateView(View):
+    def post(self, request, *args, **kwargs):
+        pass
+
+
+class AddressSearchView(View):
+    def get(self, request, *args, **kwargs):
+        pass
+
+
+class JSONResponseMixin:
+    def render_to_json_response(self, context, **response_kwargs):
+        return JsonResponse(self.get_data(context), **response_kwargs)
+
+    def get_data(self, context):
+        return context
+
+
+class AddressListAPIView(JSONResponseMixin, AddressListView):
+    def render_to_response(self, context):
+        return self.render_to_json_response(context)

@@ -1,11 +1,16 @@
-# address/urls.py
 from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('add/', views.AddAddressView.as_view(), name='add_address'),
-    path('edit/<int:address_id>/', views.EditAddressView.as_view(), name='edit_address'),
-    path('delete/<int:address_id>/', views.DeleteAddressView.as_view(), name='delete_address'),
-    path('list/', views.ListAddressesView.as_view(), name='list_addresses'),
-    path('set-default/<int:address_id>/', views.SetDefaultAddressView.as_view(), name='set_default_address'),
+    path("", views.AddressListView.as_view(), name="list"),
+    path("add/", views.AddressAddView.as_view(), name="add"),
+    path("edit/<int:pk>/", views.AddressUpdateView.as_view(), name="edit"),
+    path("delete/<int:pk>/", views.AddressDeleteView.as_view(), name="delete"),
+    path(
+        "set-default/<int:pk>/",
+        views.AddressSetDefaultView.as_view(),
+        name="set_default",
+    ),
+    path("validate/", views.AddressValidateView.as_view(), name="validate"),
+    path("search/", views.AddressSearchView.as_view(), name="search"),
 ]
