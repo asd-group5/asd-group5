@@ -62,16 +62,7 @@ function AppContent() {
 
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <LoginSignup
-            isLoggedIn={isLoggedIn}
-            setIsLoggedIn={setIsLoggedIn}
-            setUsername={setUsername}
-          />
-        }
-      />
+      <Route path="/" element={<LoginSignup isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} setUsername={setUsername} /> }/>
       <Route path="home" element={<Home isLoggedIn={isLoggedIn} username={username} handleLogout={handleLogout} checkLoggedInUser={checkLoggedInUser}/>}
       />
       <Route path="payment" element={<PaymentPage />} />
