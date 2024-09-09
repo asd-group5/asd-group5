@@ -55,7 +55,7 @@ function AppContent() {
         localStorage.removeItem("refreshToken");
         setIsLoggedIn(false);
         setUsername("");
-        console.log("Log out successful!");
+        console.log("Log out successful!f");
         navigate("/");
       }
     } catch (error) {
