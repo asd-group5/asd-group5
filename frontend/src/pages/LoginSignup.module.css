@@ -1,0 +1,122 @@
+.img {
+    width: 20px;
+    height: 20px;
+}
+
+.container {
+    display: flex;
+    width: 100vw;
+    flex-direction: column;
+    margin: 0 auto;
+    background-color: rgba(45, 78, 26, 0.3);
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.title {
+    color: rgb(10, 70, 55);
+    font-size: 48px;
+    font-weight: 700;
+}
+
+.underline {
+    width: 200px;
+    height: 5px;
+    background: rgb(11, 83, 59);
+    border-radius: 5px;
+}
+
+.inputContainer {
+    margin-top: 35px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.error {
+    text-align: center;
+    color: red;
+    font-weight: 300;
+}
+.input {
+    display: flex;
+    align-items: center;
+    margin: auto;
+    width: 480px;
+    height: 80px;
+    background: rgba(192, 175, 175, 0.5);
+    border-radius: 6px;
+    margin-bottom: 10px;
+    background-color: rgba(45, 78, 26, 0.3);
+
+}
+
+.input img {
+    margin: 0px 30px;
+}
+
+.input input {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 20px;
+    cursor: pointer;
+    width:100%;
+}
+
+.forottenPw {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+.forottenPw span {
+    color: purple;
+    cursor: pointer;
+}
+
+.submitContainer {
+    display: flex;
+    gap: 30px;
+    margin: 30px auto;
+}
+
+.submit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 220px;
+    height: 60px;
+    color: white;
+    background: rgb(35, 84, 156);
+    border-radius: 50px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+    margin: 0 auto;
+}
+
+.switch {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 220px;
+    height: 60px;
+    color: white;
+    background: purple;
+    border-radius: 50px;
+    font-size: 20px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.gray {
+    background: #EAEAEA;
+    color: #676767;
+}
+
+    
