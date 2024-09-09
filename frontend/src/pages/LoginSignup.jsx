@@ -88,7 +88,7 @@ export default function LoginSignup() {
     useEffect(() => {
 
         if (isRegistered) {
-            navigate("/Home");
+            navigate("/home");
         }
     }, [isRegistered, navigate]);
 
