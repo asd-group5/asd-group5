@@ -6,37 +6,45 @@ const OrderCustomisation = () => {
 
     const [total, setTotal] = useState(0);
     //Mock data
-    const [orders, setOrders] = useState([{
+    const [orders, setOrders] = useState([
+    {
         "itemID": 1,
         "name": "Cheese burger",
         "basePrice": 10,
         "totalPrice": 10,
-        "custom": {
-            "tomato": {
+        "custom": [
+            {
+                "name": "tomato",
                 "checked": false,
                 "price": 1
             },
-            "lettuce": {
+            {
+                "name": "lettuce",
                 "checked": false,
                 "price": 2
             },
-            "sauce": {
+            {
+                "name": "sauce",
                 "checked": false,
                 "price": 0.5
             }
-        }
+        ]
+            
     },
     {
         "itemID": 2,
         "name": "Chips",
         "basePrice": 4,
         "totalPrice": 4.5,
-        "custom": {
-            "sauce": {
+        "custom": [
+            {
+                "name": "sauce",
                 "checked": true,
                 "price": 0.5
             }
-        }
+        ]
+            
+        
     },
     {
         "itemID": 3,
@@ -98,6 +106,7 @@ const OrderCustomisation = () => {
                             setOrders={updateOrder}
                             custom={value.custom}
                             required={value.required}
+                            key={index}
                         />
                     )
                 })}

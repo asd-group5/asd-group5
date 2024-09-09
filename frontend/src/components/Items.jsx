@@ -6,7 +6,7 @@ const Items = ({itemName, totalPrice, index, orders, setOrders, custom, required
     const [showCustom, setShowCustom] = useState(false);
     
     const handleAddQuanity = () =>{
-        let temp = orders.concat(orders[index]);
+        let temp = orders.concat(structuredClone(orders[index]));
         setOrders(temp);
         console.log(temp);
     }
@@ -22,11 +22,11 @@ const Items = ({itemName, totalPrice, index, orders, setOrders, custom, required
         setShowCustom(!showCustom);
     }
 
-    const updateCart = (items) => {
+    const updateCart = (items, key) => { 
         console.log(orders);
         let temp = [...orders];
-        temp[index]['custom'] = items;
-        temp[index]['totalPrice'] = temp[index]['basePrice'] + getNewPrice(items)
+        temp[key]['custom'] = items;
+        temp[key]['totalPrice'] = temp[key]['basePrice'] + getNewPrice(items)
         console.log(temp);
         setOrders(temp);
     }
@@ -76,7 +76,8 @@ return(
                 </h4>
                 <Customisation 
                     custom={custom} 
-                    updateCart={updateCart}/>
+                    updateCart={updateCart}
+                    index={index}/>
             </div> : null}
         <strong>
             ${totalPrice}

@@ -1,39 +1,47 @@
 import { useState } from "react";
 import './Customisation.css';
 
-const Customisation = ({custom, updateCart}) => {
-    const [items, setItems] = useState(custom);
+const Customisation = ({custom, updateCart, index}) => {
+    const [items, setItems] = useState(structuredClone(custom));
     const [update, setUpdate] = useState(true);
 
-    let customs = Object.getOwnPropertyNames(custom);
-
     const handleCheck = (value) => {
-        let temp = JSON.parse(JSON.stringify(items));
+        /* let temp = JSON.parse(JSON.stringify(items));
         temp[value]['checked'] = !temp[value]['checked'];
 
         setUpdate(Object.keys(custom)
-            .every((key) => custom[key]['checked'] === temp[key]['checked']));
-            
+            .every((key) => custom[key]['checked'] === temp[key]['checked'])); */
+        let temp = structuredClone(items);
+        
+        temp[value]['checked'] = !temp[value]['checked'];
+        if(custom === temp){
+            console.log("true!");
+        }else{
+            console.log("false!");
+        }
+
+        setUpdate(temp.every((element, index) => custom[index]['checked'] == element['checked']));
+
         setItems(temp);
     }
 
     const handleUpdate = () => {
         setUpdate(true);
-        updateCart(items);
+        updateCart(items, index);
     }
 
     return(
         <div>
-            {customs.map(value => {
+            {items.map((item, index) => {
                 return(
                     <div className="customisationOption">
                         <label>
-                            ${custom[value]['price']} {value[0].toUpperCase() + value.slice(1)}
+                            ${item['price']} {item['name'][0].toUpperCase() + item['name'].slice(1)}
                         </label>
                         <div>
                             <input type="checkbox" 
-                            checked={items[value]['checked']}
-                            onChange={() => handleCheck(value)}/>
+                            checked={item['checked']}
+                            onChange={() => handleCheck(index)}/>
                         </div>
                     </div>
                 )
