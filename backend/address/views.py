@@ -1,8 +1,3 @@
-<<<<<<< Updated upstream
-from django.shortcuts import render
-
-# Create your views here.
-=======
 from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.http import JsonResponse
@@ -54,4 +49,3 @@ class JSONResponseMixin:
 class AddressListAPIView(JSONResponseMixin, AddressListView):
     def render_to_response(self, context):
         return self.render_to_json_response(context)
->>>>>>> Stashed changes

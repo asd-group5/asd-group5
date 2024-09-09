@@ -1,6 +1,6 @@
 import React from 'react';
 
-const PaymentFormComponent = () => {
+const PaymentComponent = () => {
     return (
         <div>
             <h2>Add Payment Method</h2>
@@ -43,4 +43,4 @@ const PaymentFormComponent = () => {
     );
 };
 
-export default PaymentFormComponent;
+export default PaymentComponent;

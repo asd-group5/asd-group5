@@ -1,5 +1,3 @@
-<<<<<<< Updated upstream
-=======
 from django.urls import path
 from . import views
 
@@ -22,4 +20,3 @@ urlpatterns = [
         "details/<str:payment_id>/", views.PaymentDetailsView.as_view(), name="details"
     ),
 ]
->>>>>>> Stashed changes

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const AddressFormComponent = () => {
+const AddressComponent = () => {
     return (
         <div>
             <h2>Add/Edit Address</h2>
@@ -39,4 +39,4 @@ const AddressFormComponent = () => {
     );
 };
 
-export default AddressFormComponent;
+export default AddressComponent;
