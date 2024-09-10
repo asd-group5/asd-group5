@@ -1,0 +1,26 @@
+.order-history {
+    padding: 2rem;
+    max-inline-size: 800px;
+    margin: 0 auto;
+  }
+  
+  .order-history h2 {
+    font-size: 2rem;
+    margin-block-end: 1rem;
+  }
+  
+  .order-history ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .order-history li {
+    padding: 1rem;
+    border-block-end: 1px solid #ddd;
+  }
+  
+  .order-history li span {
+    display: block;
+    font-size: 1.2rem;
+  }
+  
