@@ -34,7 +34,6 @@ const PaymentComponent = () => {
                     <label htmlFor="paymentMethod">Select Payment Method:</label>
                     <select id="paymentMethod" name="paymentMethod" required>
                         <option value="">Select a payment method</option>
-                        {/* Payment methods will be populated here */}
                     </select>
                 </div>
                 <button type="submit">Process Payment</button>
