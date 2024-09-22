@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import Option
+from .models import Option, MenuItem
+
 
 # Register your models here.
-admin.site.register(Option)
+customModels = [Option, MenuItem]
+
+admin.site.register(customModels)

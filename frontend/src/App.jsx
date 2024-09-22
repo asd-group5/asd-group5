@@ -69,7 +69,7 @@ function AppContent() {
       <Route path="home" element={<Home isLoggedIn={isLoggedIn} username={username} handleLogout={handleLogout} checkLoggedInUser={checkLoggedInUser}/>}/>
       <Route path="payment" element={<PaymentPage />} />
       <Route path="address" element={<AddressPage />} />
-      <Route path="/Customisation" element={isLoggedIn ? <OrderCustomisation/> : <LoginSignup/>} />
+      <Route path="/Customisation" /* element={isLoggedIn ? <OrderCustomisation/> : <LoginSignup/>}  */ element={<OrderCustomisation/> }/>
     </Routes>
   );
 }

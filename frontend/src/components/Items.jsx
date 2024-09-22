@@ -35,7 +35,7 @@ const Items = ({itemName, totalPrice, index, orders, setOrders, custom, required
         let newPrice = 0;
         for (const property in items) {
             if(items[property]['checked']){
-                newPrice += items[property]['price'];
+                newPrice += Number(items[property]['option_price']);
             }
         }
         return(newPrice);
