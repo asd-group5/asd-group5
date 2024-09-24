@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import axios from "axios";
 import PaymentPage from './pages/PaymentPage';
 import AddressPage from './pages/AddressPage';
-import OrderCustomisation from './components/OrderCustomisation';
+import OrderPage from './pages/OrderPage';
 
 function AppContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -69,7 +69,7 @@ function AppContent() {
       <Route path="home" element={<Home isLoggedIn={isLoggedIn} username={username} handleLogout={handleLogout} checkLoggedInUser={checkLoggedInUser}/>}/>
       <Route path="payment" element={<PaymentPage />} />
       <Route path="address" element={<AddressPage />} />
-      <Route path="/Customisation" /* element={isLoggedIn ? <OrderCustomisation/> : <LoginSignup/>}  */ element={<OrderCustomisation/> }/>
+      <Route path="/Cart" /* element={isLoggedIn ? <OrderCustomisation/> : <LoginSignup/>}  */ element={<OrderPage/> }/>
     </Routes>
   );
 }

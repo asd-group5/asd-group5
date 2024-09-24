@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import Items from "./Items"
-import customService from '../services/custom.jsx'
+import customService from '../../services/custom.jsx'
 import './OrderCustomisation.css'
 
 const OrderCustomisation = () => {
@@ -106,8 +106,7 @@ const OrderCustomisation = () => {
 
     return(
         <div className="customisationContainer">
-            <h1>Current Order</h1>
-
+            <h2>Order</h2>
             <div className="orders">
                 {orders.map((value, index) =>{
                     return(
@@ -129,7 +128,7 @@ const OrderCustomisation = () => {
                 <h4>
                     Total: ${total}
                 </h4>
-                <button onClick={() => customService.getOptions([1])}>
+                <button onClick={()=> console.log("test")}>
                     Submit Order
                 </button>
             </div>
