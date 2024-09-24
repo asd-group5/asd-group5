@@ -26,7 +26,7 @@ const Customisation = ({custom, updateCart, index}) => {
                 return(
                     <div className="customisationOption" key={index}>
                         <label>
-                            ${item['price']} {item['name'][0].toUpperCase() + item['name'].slice(1)}
+                            ${item['option_price']} {item['option_name'][0].toUpperCase() + item['option_name'].slice(1)}
                         </label>
                         <div>
                             <input type="checkbox" 
