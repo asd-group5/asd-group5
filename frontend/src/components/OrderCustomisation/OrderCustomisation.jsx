@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react"
 import Items from "./Items"
+import InstructionPortal from "./InstructionPortal.jsx"
 import customService from '../../services/custom.jsx'
 import './OrderCustomisation.css'
 
 const OrderCustomisation = () => {
-
     const [total, setTotal] = useState(0);
+    const [instructions, setInstructions] = useState("");
     const [orders, setOrders] = useState([
         {
             "itemID": 1,
@@ -128,6 +129,9 @@ const OrderCustomisation = () => {
                 <h4>
                     Total: ${total}
                 </h4>
+                <div className="instructionContainer">
+                    <InstructionPortal/>
+                </div>
                 <button onClick={()=> console.log("test")}>
                     Submit Order
                 </button>
