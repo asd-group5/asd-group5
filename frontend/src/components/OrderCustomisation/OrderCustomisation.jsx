@@ -129,12 +129,19 @@ const OrderCustomisation = () => {
                 <h4>
                     Total: ${total}
                 </h4>
-                <div className="instructionContainer">
-                    <InstructionPortal/>
+                <div style={{display: "flex", flexDirection: "column", gap: "1em"}}>
+                    <div className="instructionContainer">
+                        <InstructionPortal 
+                            instructions={instructions} 
+                            setInstructions={setInstructions}/>
+                    </div>
+                    <div>
+                        <button onClick={()=> console.log("test")}>
+                            Submit Order
+                        </button>
+                    </div>
                 </div>
-                <button onClick={()=> console.log("test")}>
-                    Submit Order
-                </button>
+                
             </div>
         </div>
     )
