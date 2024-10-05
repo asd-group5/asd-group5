@@ -5,12 +5,12 @@ This project is an online restaurant ordering web application.
 
 ## Features
 
-| Feature | Description  | Owner |
+| Feature | Directory  | Owner |
 | :------ | :----------- | :---- |
 | User authentication |  | Dylan |
 | Administration |  | Dylan |
-| Order Customisation |  | Andy Le |
-| Scheduled Ordering |  | Andy Le |
+| Order Customisation | [Frontend](frontend/src/components/OrderCustomisation/) [Backend](backend/custom/) | Andy Le |
+| Scheduled Ordering | [Frontend](frontend/src/components/ScheduleOrder/) | Andy Le |
 | Payment Management |  | Joonghyuk Seong |
 | Address Management |  | Joonghyuk Seong |
 | Menu list |  | ReiJiang Wong |
