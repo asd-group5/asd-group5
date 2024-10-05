@@ -42,9 +42,10 @@ INSTALLED_APPS = [
     "accounts",  # or accounts.apps.AccountsConfig
     "address",
     "payment",
-    "rest_framework",
-    "rest_framework_simplejwt.token_blacklist",
-    "corsheaders",
+    'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
+    'corsheaders',
+    "custom.apps.CustomConfig"
 ]
 
 MIDDLEWARE = [
