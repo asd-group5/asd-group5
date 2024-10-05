@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import axios from "axios";
 import PaymentPage from './pages/PaymentPage';
 import AddressPage from './pages/AddressPage';
-import OrderPage from './pages/OrderPage';
 
 function AppContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -65,11 +64,14 @@ function AppContent() {
 
   return (
     <Routes>
-      <Route path="/"element={<LoginSignup isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} setUsername={setUsername}/>}/>
-      <Route path="home" element={<Home isLoggedIn={isLoggedIn} username={username} handleLogout={handleLogout} checkLoggedInUser={checkLoggedInUser}/>}/>
-      <Route path="/payment" element={<PaymentPage />}/>
-      <Route path="/address" element={<AddressPage />}/>
-      <Route path="/Cart" /* element={isLoggedIn ? <OrderCustomisation/> : <LoginSignup/>}  */ element={<OrderPage/> }/>
+      <Route path="/" element={<Header isLoggedIn={isLoggedIn} username={username} handleLogout={handleLogout} />}>
+        <Route index element={<Home isLoggedIn={isLoggedIn} username={username} handleLogout={handleLogout} />} />
+        <Route path="home" element={<Home isLoggedIn={isLoggedIn} username={username} handleLogout={handleLogout} />} />
+        <Route path="payment" element={<PaymentPage />} />
+        <Route path="address" element={<AddressPage />} />
+      </Route>
+      <Route path="login" element={<Login setIsLoggedIn={setIsLoggedIn} setUsername={setUsername} />} />
+      <Route path="register" element={<Register />} />
     </Routes>
   );
 }
