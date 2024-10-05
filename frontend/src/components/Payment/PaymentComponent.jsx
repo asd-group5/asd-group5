@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 const PaymentComponent = () => {
   const BASE_URL = "http://localhost:8000";
 
-<<<<<<< HEAD
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [newPaymentMethod, setNewPaymentMethod] = useState({
     name: "",
@@ -114,22 +113,6 @@ const PaymentComponent = () => {
             }
             required
           />
-=======
-            <h2>Make Payment</h2>
-            <form>
-                <div>
-                    <label htmlFor="amount">Amount:</label>
-                    <input type="number" id="amount" name="amount" min="0" step="0.01" required />
-                </div>
-                <div>
-                    <label htmlFor="paymentMethod">Select Payment Method:</label>
-                    <select id="paymentMethod" name="paymentMethod" required>
-                        <option value="">Select a payment method</option>
-                    </select>
-                </div>
-                <button type="submit">Process Payment</button>
-            </form>
->>>>>>> e50e1a2c2315d7a2d12740ef557bf8437b754de7
         </div>
         <div>
           <label htmlFor="cardNumber">Card Number:</label>
