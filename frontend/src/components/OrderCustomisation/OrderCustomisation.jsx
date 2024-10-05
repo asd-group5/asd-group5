@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom";
 import Items from "./Items"
 import InstructionPortal from "./InstructionPortal.jsx"
 import customService from '../../services/custom.jsx'
 import './OrderCustomisation.css'
 
 const OrderCustomisation = () => {
+    const navigate = useNavigate();
     const [total, setTotal] = useState(0);
     const [instructions, setInstructions] = useState("");
     const [orders, setOrders] = useState([
@@ -136,7 +138,7 @@ const OrderCustomisation = () => {
                             setInstructions={setInstructions}/>
                     </div>
                     <div>
-                        <button onClick={()=> console.log("test")}>
+                        <button onClick={()=> navigate('/cart/schedule', {state: {order: orders}})}>
                             Submit Order
                         </button>
                     </div>
