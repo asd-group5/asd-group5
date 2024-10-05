@@ -1,51 +1,72 @@
-from django.views import View
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+import json
+
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+from .models import Payment, PaymentMethod
 
 
-class PaymentProcessView(View):
-    def post(self, request, *args, **kwargs):
-        pass
+class PaymentMethodListView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request):
+        print(request.user)
+        payment_methods = PaymentMethod.objects.filter(user=request.user).values(
+            "id", "name", "card_number", "expiry_date", "is_default"
+        )
+        return Response(list(payment_methods))
 
 
-class PaymentMethodListView(ListView):
-    def get(self, request, *args, **kwargs):
-        pass
+class PaymentMethodAddView(APIView):
+    def post(self, request):
+        print(request.user)
+        data = json.loads(request.body)
+        payment_method = PaymentMethod.objects.create(
+            user=request.user,
+            name=data["name"],
+            card_number=data["cardNumber"],
+            expiry_date=data["expiryDate"],
+            cvv=data["cvv"],
+            is_default=data.get("is_default", False),
+        )
+        return JsonResponse(
+            {"id": payment_method.id, "message": "Payment method added successfully"}
+        )
 
 
-class PaymentMethodAddView(CreateView):
-    def post(self, request, *args, **kwargs):
-        pass
+class PaymentProcessView(APIView):
+    def post(self, request):
+        print(request.user)
+        data = json.loads(request.body)
+        payment_method = get_object_or_404(
+            PaymentMethod, id=data["paymentMethodId"], user=request.user
+        )
+        payment = Payment.objects.create(
+            user=request.user,
+            amount=data["amount"],
+            payment_method=payment_method,
+            status="completed",
+        )
+        return JsonResponse(
+            {
+                "id": payment.id,
+                "status": payment.status,
+                "message": "Payment processed successfully",
+            }
+        )
 
 
-class PaymentMethodEditView(UpdateView):
-    def put(self, request, pk, *args, **kwargs):
-        pass
-
-
-class PaymentMethodDeleteView(DeleteView):
-    def delete(self, request, pk, *args, **kwargs):
-        pass
-
-
-class PaymentHistoryView(ListView):
-    def get(self, request, *args, **kwargs):
-        pass
-
-
-class PaymentDetailsView(View):
-    def get(self, request, payment_id, *args, **kwargs):
-        pass
-
-
-class JSONResponseMixin:
-    def render_to_json_response(self, context, **response_kwargs):
-        return JsonResponse(self.get_data(context), **response_kwargs)
-
-    def get_data(self, context):
-        return context
-
-
-class PaymentMethodListAPIView(JSONResponseMixin, PaymentMethodListView):
-    def render_to_response(self, context):
-        return self.render_to_json_response(context)
+class PaymentHistoryView(APIView):
+    def get(self, request):
+        payments = Payment.objects.filter(user=request.user).values(
+            "id", "amount", "status", "created_at"
+        )
+        return JsonResponse(list(payments), safe=False)
