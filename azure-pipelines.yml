@@ -25,7 +25,7 @@ steps:
 
 - task: PublishCodeCoverageResults@2
   inputs:
-    summaryFileLocation: 'frontend\coverage\cobertura-coverage.xml'
+    summaryFileLocation: 'frontend/coverage/cobertura-coverage.xml'
     failIfCoverageEmpty: true
 
 - script: |
