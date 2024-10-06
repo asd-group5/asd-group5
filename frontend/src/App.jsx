@@ -7,6 +7,7 @@ import axios from "axios";
 import PaymentPage from './pages/PaymentPage';
 import AddressPage from './pages/AddressPage';
 import OrderPage from './pages/OrderPage';
+import SchedulePage from './pages/SchedulePage'
 
 function AppContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -70,6 +71,7 @@ function AppContent() {
       <Route path="payment" element={<PaymentPage />} />
       <Route path="address" element={<AddressPage />} />
       <Route path="/Cart" /* element={isLoggedIn ? <OrderCustomisation/> : <LoginSignup/>}  */ element={<OrderPage/> }/>
+      <Route path="/Cart/Schedule" element={<SchedulePage/>}/>
     </Routes>
   );
 }
