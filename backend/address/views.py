@@ -1,51 +1,61 @@
-from django.views import View
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from django.http import JsonResponse
+from rest_framework import generics, status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .models import Address
+from .serializers import AddressSerializer
 
 
-class AddressListView(ListView):
-    def get(self, request, *args, **kwargs):
-        pass
+class AddressListView(generics.ListCreateAPIView):
+    serializer_class = AddressSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Address.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
-class AddressAddView(CreateView):
-    def post(self, request, *args, **kwargs):
-        pass
+class AddressDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = AddressSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Address.objects.filter(user=self.request.user)
 
 
-class AddressUpdateView(UpdateView):
-    def put(self, request, pk, *args, **kwargs):
-        pass
+class AddressSetDefaultView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            address = Address.objects.get(pk=pk, user=request.user)
+            Address.objects.filter(user=request.user).update(is_default=False)
+            address.is_default = True
+            address.save()
+            return Response({"message": "Default address set successfully"})
+        except Address.DoesNotExist:
+            return Response(
+                {"error": "Address not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
 
-class AddressDeleteView(DeleteView):
-    def delete(self, request, pk, *args, **kwargs):
-        pass
+class AddressValidateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = AddressSerializer(data=request.data)
+        if serializer.is_valid():
+            return Response({"message": "Address is valid"})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class AddressSetDefaultView(View):
-    def post(self, request, pk, *args, **kwargs):
-        pass
+class AddressSearchView(generics.ListAPIView):
+    serializer_class = AddressSerializer
+    permission_classes = [IsAuthenticated]
 
-
-class AddressValidateView(View):
-    def post(self, request, *args, **kwargs):
-        pass
-
-
-class AddressSearchView(View):
-    def get(self, request, *args, **kwargs):
-        pass
-
-
-class JSONResponseMixin:
-    def render_to_json_response(self, context, **response_kwargs):
-        return JsonResponse(self.get_data(context), **response_kwargs)
-
-    def get_data(self, context):
-        return context
-
-
-class AddressListAPIView(JSONResponseMixin, AddressListView):
-    def render_to_response(self, context):
-        return self.render_to_json_response(context)
+    def get_queryset(self):
+        query = self.request.query_params.get("q", "")
+        return Address.objects.filter(user=self.request.user, name__icontains=query)

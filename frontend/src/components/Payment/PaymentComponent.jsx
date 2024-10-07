@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-
+import { getValidToken } from "../../utils/auth";
+import { useNavigate } from "react-router-dom";
 const PaymentComponent = () => {
   const BASE_URL = "http://localhost:8000";
+  const navigate = useNavigate();
 
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [newPaymentMethod, setNewPaymentMethod] = useState({
@@ -19,7 +21,7 @@ const PaymentComponent = () => {
 
   const getPaymentMethods = async () => {
     try {
-      const token = localStorage.getItem("accessToken");
+      const token = await getValidToken();
       const response = await fetch(`${BASE_URL}/api/payment/methods/`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -44,7 +46,7 @@ const PaymentComponent = () => {
   const addPaymentMethod = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("accessToken");
+      const token = await getValidToken();
       const response = await fetch(`${BASE_URL}/api/payment/methods/add/`, {
         method: "POST",
         headers: {
@@ -72,7 +74,7 @@ const PaymentComponent = () => {
   const processPayment = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("accessToken");
+      const token = await getValidToken();
       const response = await fetch(`${BASE_URL}/api/payment/process/`, {
         method: "POST",
         headers: {
@@ -89,7 +91,18 @@ const PaymentComponent = () => {
       }
       const data = await response.json();
       console.log("Payment processed:", data);
-      alert("Payment processed successfully!");
+
+      const selectedMethod = paymentMethods.find(
+        (method) => method.id === parseInt(selectedPaymentMethod)
+      );
+
+      navigate("/payment-confirmation", {
+        state: {
+          amount: paymentAmount,
+          paymentMethod: selectedMethod,
+        },
+      });
+
       setPaymentAmount("");
       setSelectedPaymentMethod("");
     } catch (error) {
@@ -97,7 +110,6 @@ const PaymentComponent = () => {
       alert("Error processing payment. Please try again.");
     }
   };
-
   return (
     <div>
       <h2>Add Payment Method</h2>
