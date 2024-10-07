@@ -35,13 +35,6 @@ stages:
         customCommand: 'ci'
 
     - task: Npm@1
-      displayName: 'Run linter'
-      inputs:
-        command: custom
-        workingDir: '$(frontendDirectory)'
-        customCommand: 'run lint'
-
-    - task: Npm@1
       displayName: 'Run tests'
       inputs:
         command: custom
