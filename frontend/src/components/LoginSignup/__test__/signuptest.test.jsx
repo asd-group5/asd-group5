@@ -4,12 +4,10 @@ import '@testing-library/jest-dom';
 import axios from 'axios';
 import { BrowserRouter as Router } from 'react-router-dom';
 
-// Mock axios
 jest.mock('axios');
 
 describe('LoginSignup Component', () => {
   beforeEach(() => {
-    // Reset mocks before each test
     jest.clearAllMocks();
   });
 
@@ -52,7 +50,7 @@ describe('LoginSignup Component', () => {
         // Switch to login mode
         fireEvent.click(screen.getByText('Login'));
 
-        // Mock login API failure response
+        // Error
         axios.post.mockRejectedValue({
             response: {
             data: {

@@ -3,6 +3,7 @@ import styles from './LoginSignup.module.css';
 import user from '../Assets/user.png';
 import mail from '../Assets/mail.png';
 import password from '../Assets/padlock.png';
+import food from '../Assets/food.jpg';
 import axios from "axios"
 import { Navigate, useNavigate } from 'react-router-dom';
 
@@ -95,8 +96,7 @@ export default function LoginSignup() {
     const [action, setAction] = useState("Sign Up");
     useEffect(() => {
         document.body.style.margin = "0";
-        document.body.style.height = "100vh";
-        document.body.style.background = "#658138";
+        document.body.style.height = "100%";
         document.body.style.display = "flex";
         document.body.style.justifyContent = "center";
         document.body.style.alignItems = "center";
@@ -131,7 +131,7 @@ export default function LoginSignup() {
             </div>
             {action === "Sign Up" ? <div className={styles.input}> <img className={styles.img} src={password} alt="Password Icon"/> <input type="password" placeholder="Confirm Password" name='password2' value={formData.password2} onChange={handleChange}/> </div> : 
                 <div className={styles.forottenPw}>
-                    Lost Password? <span>Click Here</span>
+                    Administrator? <span><a href="http://127.0.0.1:8000/admin/">Click Here</a></span>
                 </div>
             }
             <button className={styles.submit} onClick={handleSubmit}>Submit</button>
