@@ -5,7 +5,7 @@ const SchedulePage = () => {
     const {state: {order, instructions}} = useLocation();
 
     return (
-        <div>
+        <div style={{backgroundColor: "#242424", padding: "50px", borderRadius: "20px"}}>
             <h1>Schedule</h1>
             This is the schedule page
             <Schedule order={order} instructions={instructions}/>

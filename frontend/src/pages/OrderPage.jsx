@@ -3,7 +3,7 @@ import OrderCustomisation from '../components/OrderCustomisation/OrderCustomisat
 
 const OrderPage = () => {
     return (
-        <div>
+        <div style={{backgroundColor: "#242424", padding: "50px", borderRadius: "20px"}}>
             <h1>Cart</h1>
             <OrderCustomisation />
         </div>
