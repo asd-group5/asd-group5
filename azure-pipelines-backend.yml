@@ -52,11 +52,6 @@ jobs:
     displayName: 'Install prerequisites'
 
   - script: |
-      pylint $(projectRoot)
-    displayName: 'Run pylint'
-    continueOnError: true
-
-  - script: |
       pushd '$(projectRoot)'
       python manage.py check
       coverage run manage.py test --testrunner xmlrunner.extra.djangotestrunner.XMLTestRunner --no-input
