@@ -18,8 +18,8 @@ describe('LoginSignup Component', () => {
       </Router>
     );
   };
-
-    test('renders the sign-up form by default', () => {
+////////////////////////
+    test('renders sign-up form', () => {
         render(
             <Router>
                 <LoginSignup />
@@ -31,8 +31,8 @@ describe('LoginSignup Component', () => {
         expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
         expect(screen.getByPlaceholderText('Confirm Password')).toBeInTheDocument();
     });
-
-    test('renders the login form', () => {
+////////////////////////
+    test('renders login form', () => {
         render(
             <Router>
                 <LoginSignup />
@@ -43,8 +43,8 @@ describe('LoginSignup Component', () => {
         expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
         expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
     });
-
-    test('displays error message when login fails', async () => {
+///////////////////////
+    test('error message displayed when login fails', async () => {
         renderComponent();
 
         // Switch to login mode
@@ -54,7 +54,7 @@ describe('LoginSignup Component', () => {
         axios.post.mockRejectedValue({
             response: {
             data: {
-                email: ['Invalid email'],
+                email: ['Invalid Credentials'],
             },
             },
         });
@@ -72,8 +72,7 @@ describe('LoginSignup Component', () => {
 
         // Wait for the error message to be displayed
         await waitFor(() => {
-            expect(screen.getByText('Invalid email')).toBeInTheDocument();
+            expect(screen.getByText('Invalid Credentials')).toBeInTheDocument();
         });
     });
-
 });

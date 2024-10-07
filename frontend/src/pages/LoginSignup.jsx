@@ -130,9 +130,9 @@ export default function LoginSignup() {
                 </div>
             </div>
             {action === "Sign Up" ? <div className={styles.input}> <img className={styles.img} src={password} alt="Password Icon"/> <input type="password" placeholder="Confirm Password" name='password2' value={formData.password2} onChange={handleChange}/> </div> : 
-                <div className={styles.forottenPw}>
-                    Administrator? <span><a href="http://127.0.0.1:8000/admin/">Click Here</a></span>
-                </div>
+                    <div className={styles.forottenPw}>
+                        Administrator? <span><a href="http://127.0.0.1:8000/admin/">Click Here</a></span>
+                    </div>
             }
             <button className={styles.submit} onClick={handleSubmit}>Submit</button>
 
