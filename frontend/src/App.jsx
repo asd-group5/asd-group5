@@ -4,10 +4,12 @@ import LoginSignup from "./pages/LoginSignup";
 import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import axios from "axios";
+
 import PaymentPage from "./pages/PaymentPage";
 import PaymentConfirmationPage from "./pages/PaymentConfirmationPage";
 import AddressPage from "./pages/AddressPage";
-import OrderPage from "./pages/OrderPage";
+import OrderPage from './pages/OrderPage';
+import SchedulePage from './pages/SchedulePage'
 
 function AppContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -100,12 +102,9 @@ function AppContent() {
         element={<PaymentConfirmationPage />}
       />
       <Route path="address" element={<AddressPage />} />
-      <Route
-        path="/Cart"
-        /* element={isLoggedIn ? <OrderCustomisation/> : <LoginSignup/>}  */ element={
-          <OrderPage />
-        }
-      />
+
+      <Route path="/Cart" /* element={isLoggedIn ? <OrderCustomisation/> : <LoginSignup/>}  */ element={<OrderPage/> }/>
+      <Route path="/Cart/Schedule" element={<SchedulePage/>}/>
     </Routes>
   );
 }
