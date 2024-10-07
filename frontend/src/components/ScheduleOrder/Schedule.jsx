@@ -1,21 +1,24 @@
-
-
-const Schedule = ({order}) =>{
-
+const Schedule = ({order, instructions}) =>{
     console.log(order);
 return(
-    <>
-        This is the schedule page
-        
-        Your Order:
+    <div>
+        <h3>Your Order</h3>
         {order.map((item) =>{
             return(
                 <p>
                     {item.name} ${item.totalPrice}
+                    <br/>
+                    {item.hasOwnProperty("custom") ? 
+                        item['custom'].map((element) =>(
+                            element['option_name'] + " " + element['option_price'] + " " + element['checked'])) 
+                        :null}
                 </p>
             )
         })}
-    </>
+        {instructions ? 
+                    <p>Instructions provided: {instructions}</p> : 
+                    <p>No instructions provided</p>}
+    </div>
 )
 
 }

@@ -51,9 +51,11 @@ return(
 
         <div className='quantity'>
             
-            <button onClick={() => {
+            <button className='editButton' onClick={() => {
                 handleAddQuanity();
-            }}>Add</button>
+            }}>
+                Add
+            </button>
             {/* <input type='number'/> */}
             <button onClick={() => {
                 handleRemove();
