@@ -9,7 +9,8 @@ import PaymentPage from "./pages/PaymentPage";
 import PaymentConfirmationPage from "./pages/PaymentConfirmationPage";
 import AddressPage from "./pages/AddressPage";
 import OrderPage from './pages/OrderPage';
-import SchedulePage from './pages/SchedulePage'
+import SchedulePage from './pages/SchedulePage';
+import MenuList from './pages/MenuList'; // Import your MenuList component
 
 function AppContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -102,9 +103,11 @@ function AppContent() {
         element={<PaymentConfirmationPage />}
       />
       <Route path="address" element={<AddressPage />} />
-
-      <Route path="/Cart" /* element={isLoggedIn ? <OrderCustomisation/> : <LoginSignup/>}  */ element={<OrderPage/> }/>
-      <Route path="/Cart/Schedule" element={<SchedulePage/>}/>
+      <Route path="/cart" element={<OrderPage />} />
+      <Route path="/cart/schedule" element={<SchedulePage />} />
+      
+      {/* Add the new route for the menu list */}
+      <Route path="/menu" element={<MenuList />} />
     </Routes>
   );
 }
