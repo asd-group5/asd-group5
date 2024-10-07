@@ -1,11 +1,10 @@
 from django.urls import path
+
 from . import views
 
 urlpatterns = [
     path("", views.AddressListView.as_view(), name="list"),
-    path("add/", views.AddressAddView.as_view(), name="add"),
-    path("edit/<int:pk>/", views.AddressUpdateView.as_view(), name="edit"),
-    path("delete/<int:pk>/", views.AddressDeleteView.as_view(), name="delete"),
+    path("<int:pk>/", views.AddressDetailView.as_view(), name="detail"),
     path(
         "set-default/<int:pk>/",
         views.AddressSetDefaultView.as_view(),
