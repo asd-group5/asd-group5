@@ -1,9 +1,10 @@
 .itemCard{
     display: grid;
-    grid-template-areas: "a b b b b e"
-                         "a c c c c e"
-                         "a d d d d e";
+    grid-template-areas: "a b b e"
+                         "a c c e"
+                         "a d d e";
     gap: 10px;
+    min-width: 500px;
     /* border-style: solid;
     border-radius: 5px; */
 }

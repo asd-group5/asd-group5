@@ -10,8 +10,13 @@ return(
                     <br/>
                     {item.hasOwnProperty("custom") ? 
                         item['custom'].map((element) =>(
-                            element['option_name'] + " " + element['option_price'] + " " + element['checked'])) 
+                            element['option_name'] + " " + element['option_price'] + " " + element['checked'] + " ")) 
                         :null}
+                    {item.hasOwnProperty("required") ? 
+                    <>
+                        Selected: {item['required'][item['selected']]['option_name']}  
+                    </>
+                    :null}
                 </p>
             )
         })}

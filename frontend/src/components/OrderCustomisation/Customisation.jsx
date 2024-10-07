@@ -7,7 +7,7 @@ const Customisation = ({custom, updateCart, index}) => {
 
     const handleCheck = (value) => {
         let temp = structuredClone(items);
-        
+
         temp[value]['checked'] = !temp[value]['checked'];
 
         setUpdate(temp.every((element, index) => custom[index]['checked'] == element['checked']));
@@ -22,6 +22,9 @@ const Customisation = ({custom, updateCart, index}) => {
 
     return(
         <div>
+            <h4>
+                Customisation Options
+            </h4>
             {items.map((item, index) => {
                 return(
                     <div className="customisationOption" key={index}>

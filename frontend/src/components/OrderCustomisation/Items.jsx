@@ -2,7 +2,7 @@ import './Items.css'
 import Customisation from './Customisation';
 import { useState } from 'react';
 
-const Items = ({itemName, totalPrice, index, orders, setOrders, custom, required}) =>{
+const Items = ({itemName, totalPrice, index, orders, setOrders, custom}) =>{
     const [showCustom, setShowCustom] = useState(false);
     
     const handleAddQuanity = () =>{
@@ -20,6 +20,13 @@ const Items = ({itemName, totalPrice, index, orders, setOrders, custom, required
 
     const handleCustomise = () => {
         setShowCustom(!showCustom);
+    }
+
+    const handleRequiredOption = (selected) =>{
+        let temp = structuredClone(orders);
+        temp[index]['selected'] = selected;
+        temp[index]['totalPrice'] = temp[index]['basePrice'] + temp[index]['required'][selected]['price'];
+        setOrders(temp);
     }
 
     const updateCart = (items, key) => { 
@@ -56,15 +63,10 @@ return(
             }}>
                 Add
             </button>
-            {/* <input type='number'/> */}
             <button onClick={() => {
                 handleRemove();
             }}>Remove</button>
         </div>
-            {(required) ? 
-                <div>
-                    {required.name}
-                </div> : null}
         <div className='buttonContainer'>
             {(custom) ? 
                 <button onClick={handleCustomise}>
@@ -73,9 +75,34 @@ return(
         </div>
         {showCustom ? 
             <div className='customisationContainer'>
-                <h4>
-                    Customise {itemName}
-                </h4>
+                {orders[index].hasOwnProperty("required") ? 
+                <div>
+                    <h4>
+                        Required Option
+                    </h4>
+                    <form 
+                        className='option' 
+                        style={{display: 'flex', flexDirection: 'column'}}
+                        onChange={(e) => {handleRequiredOption(e.target.value)}}>
+                        {orders[index]["required"].map((option, key) => (
+                            <div style={{display: 'flex', justifyContent: 'space-between'}} key={key}>
+                                <label>${option.price} {option.option_name}</label>
+                                {orders[index]['selected'] == key ? 
+                                    <input 
+                                    value={key} 
+                                    type='radio' 
+                                    name="option"
+                                    defaultChecked/>:
+                                    <input 
+                                    value={key} 
+                                    type='radio' 
+                                    name="option"/>}
+                            </div>
+                        ))}
+                    </form>
+                </div>
+                : null}
+
                 <Customisation 
                     custom={custom} 
                     updateCart={updateCart}

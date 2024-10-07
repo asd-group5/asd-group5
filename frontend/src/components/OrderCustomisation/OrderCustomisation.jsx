@@ -15,6 +15,21 @@ const OrderCustomisation = () => {
             "name": "Cheese burger",
             "basePrice": 10,
             "totalPrice": 10,
+            "selected": 2,
+            "required": [
+                {
+                    "option_name": "Large Meal",
+                    "price": 12
+                },
+                {
+                    "option_name": "Medium Meal",
+                    "price": 10
+                },
+                {
+                    "option_name": "No Meal",
+                    "price": 0
+                }
+            ]
         },
         {
             "itemID": 2,
@@ -33,28 +48,23 @@ const OrderCustomisation = () => {
             "name": "Cheese burger",
             "basePrice": 10,
             "totalPrice": 10,
+            "selected": 2,
+            "required": [
+                {
+                    "option_name": "Large Meal",
+                    "price": 12
+                },
+                {
+                    "option_name": "Medium Meal",
+                    "price": 10
+                },
+                {
+                    "option_name": "No Meal",
+                    "price": 0
+                }
+            ]
         }
     ])
-//Might add this later
-/* "required": {
-    "name": "Meal selection",
-    "description": "Comes with drink and chips",
-    "selected": 2,
-    "options": [
-        {
-            "option_name": "Large Meal",
-            "price": 12
-        },
-        {
-            "option_name": "Medium Meal",
-            "price": 10
-        },
-        {
-            "option_name": "No Meal",
-            "price": 0
-        }
-    ]
-} */
 
     const updateOrder = (order) =>{
         setOrders(order);
@@ -120,7 +130,6 @@ const OrderCustomisation = () => {
                             orders={orders} 
                             setOrders={updateOrder}
                             custom={value.custom}
-                            required={value.required}
                             key={index}
                         />
                     )
