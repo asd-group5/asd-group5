@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu List</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+    <h1>Our Menu</h1>
+
+    <!-- Search Form -->
+    <form method="GET" action="{% url 'menu_list' %}">
+        <input type="text" name="q" placeholder="Search for menu items..." value="{{ request.GET.q }}">
+        <button type="submit">Search</button>
+    </form>
+
+    <!-- Display Filtered Menu Items -->
+    <ul>
+        {% for item in menu_items %}
+            <li>{{ item.name }} - ${{ item.price }}</li>
+        {% empty %}
+            <li>No items found.</li>
+        {% endfor %}
+    </ul>
+
+</body>
+</html>
