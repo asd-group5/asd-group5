@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,10 +25,12 @@ urlpatterns = [
     path('api/address/', include('address.urls')),
     path('api/payment/', include('payment.urls')),
     path('api/custom/', include("custom.urls"))
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 admin.site.index_title = "Restaurant"
 
 admin.site.site_header = "Restaurant Staff Access"
 
 admin.site.site_title = "Restaurant Administrator Access"
+
+admin.site.login_template = 'accounts/admin/login.html'

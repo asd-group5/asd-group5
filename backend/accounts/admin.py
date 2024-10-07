@@ -9,7 +9,6 @@ class CustomAdminUser(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomerUserChangeForm
     model = CustomUserObject
-    
     admin.site.unregister(Group) # Removes Group Panel/Model
 
     list_display = ('email', 'username', 'is_staff', 'date_joined') # decides what you can see in the users table
