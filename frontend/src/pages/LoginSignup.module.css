@@ -6,9 +6,6 @@ body {
     align-items: center;
 }
 
-*:hover {
-    border:1px solid red;
-}
 
 .img {
     width: 1.8rem;
