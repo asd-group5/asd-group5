@@ -1,11 +1,13 @@
 // App.jsx
 import Home from "./pages/Home";
-import LoginSignup from './pages/LoginSignup';
-import React, { useState, useEffect } from 'react';
+import LoginSignup from "./pages/LoginSignup";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import axios from "axios";
-import PaymentPage from './pages/PaymentPage';
-import AddressPage from './pages/AddressPage';
+
+import PaymentPage from "./pages/PaymentPage";
+import PaymentConfirmationPage from "./pages/PaymentConfirmationPage";
+import AddressPage from "./pages/AddressPage";
 import OrderPage from './pages/OrderPage';
 import SchedulePage from './pages/SchedulePage'
 
@@ -20,10 +22,13 @@ function AppContent() {
       if (token) {
         const config = {
           headers: {
-            "Authorization": `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         };
-        const response = await axios.get("http://127.0.0.1:8000/api/user/", config);
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/user/",
+          config
+        );
         setIsLoggedIn(true);
         setUsername(response.data.username);
       } else {
@@ -48,10 +53,14 @@ function AppContent() {
       if (accessToken && refreshToken) {
         const config = {
           headers: {
-            "Authorization": `Bearer ${accessToken}`
-          }
+            Authorization: `Bearer ${accessToken}`,
+          },
         };
-        await axios.post("http://127.0.0.1:8000/api/logout/", { "refresh": refreshToken }, config);
+        await axios.post(
+          "http://127.0.0.1:8000/api/logout/",
+          { refresh: refreshToken },
+          config
+        );
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         setIsLoggedIn(false);
@@ -66,10 +75,34 @@ function AppContent() {
 
   return (
     <Routes>
-      <Route path="/"element={<LoginSignup isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} setUsername={setUsername}/>}/>
-      <Route path="home" element={<Home isLoggedIn={isLoggedIn} username={username} handleLogout={handleLogout} checkLoggedInUser={checkLoggedInUser}/>}/>
+      <Route
+        path="/"
+        element={
+          <LoginSignup
+            isLoggedIn={isLoggedIn}
+            setIsLoggedIn={setIsLoggedIn}
+            setUsername={setUsername}
+          />
+        }
+      />
+      <Route
+        path="home"
+        element={
+          <Home
+            isLoggedIn={isLoggedIn}
+            username={username}
+            handleLogout={handleLogout}
+            checkLoggedInUser={checkLoggedInUser}
+          />
+        }
+      />
       <Route path="payment" element={<PaymentPage />} />
+      <Route
+        path="/payment-confirmation"
+        element={<PaymentConfirmationPage />}
+      />
       <Route path="address" element={<AddressPage />} />
+
       <Route path="/Cart" /* element={isLoggedIn ? <OrderCustomisation/> : <LoginSignup/>}  */ element={<OrderPage/> }/>
       <Route path="/Cart/Schedule" element={<SchedulePage/>}/>
     </Routes>
