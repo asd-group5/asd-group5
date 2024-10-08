@@ -54,7 +54,7 @@ jobs:
   - script: |
       pushd '$(projectRoot)'
       python manage.py check
-      coverage run manage.py test --testrunner xmlrunner.extra.djangotestrunner.XMLTestRunner --no-input
+      coverage run manage.py test --testrunner xmlrunner.extra.djangotestrunner.XMLTestRunner --no-input --parallel
       coverage xml
       coverage html
     displayName: 'Run Django tests with coverage'
@@ -66,7 +66,7 @@ jobs:
       testRunTitle: 'Python $(PYTHON_VERSION)'
     condition: succeededOrFailed()
 
-  - task: PublishCodeCoverageResults@1
+  - task: PublishCodeCoverageResults@2
     inputs:
       codeCoverageTool: 'cobertura'
       summaryFileLocation: '$(projectRoot)/coverage.xml'
@@ -78,7 +78,8 @@ jobs:
   steps:
   - script: |
       echo "Building Django project..."
-      # Add your build steps here
+      # Add your build steps here, for example:
+      # python manage.py collectstatic --noinput
     displayName: 'Build Django Project'
 
 - job: Deploy
@@ -87,5 +88,6 @@ jobs:
   steps:
   - script: |
       echo "Deploying Django project..."
-      # Add your deployment steps here
+      # Add your deployment steps here, for example:
+      # ansible-playbook deploy.yml
     displayName: 'Deploy Django Project'
