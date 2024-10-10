@@ -19,7 +19,6 @@ export default function InstructionModal({ onClose, instructions, setInstruction
 
     const handleSubmit = () =>{
         if(inputValidation()){
-            console.log(typeof value);
             setInstructions(value);
             onClose();
         }

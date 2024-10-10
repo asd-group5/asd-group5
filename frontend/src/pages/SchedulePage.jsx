@@ -2,12 +2,17 @@ import Schedule from '../components/ScheduleOrder/Schedule';
 import { useLocation } from "react-router-dom";
 
 const SchedulePage = () => {
-    const {state} = useLocation();
+    const {state: {order, instructions}} = useLocation();
 
     return (
-        <div>
+        <div style={{backgroundColor: "#242424", padding: "50px", borderRadius: "20px"}}>
             <h1>Schedule</h1>
-            <Schedule order={state.order}/>
+            This is the schedule page
+            <Schedule order={order} instructions={instructions}/>
+
+            <button>
+                Order Now
+            </button>
         </div>
     );
 };
