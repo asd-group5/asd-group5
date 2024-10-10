@@ -33,7 +33,7 @@ class UserAPITests(APITestCase):
 
 
     def test_user_deletion_in_admin(self):
-        url = reverse('admin:yourapp_customuserobject_delete', args=[self.user.id])
+        url = reverse('user', args=[self.user.id])
         self.client.force_login(self.user)
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302)  # Expecting a redirect
