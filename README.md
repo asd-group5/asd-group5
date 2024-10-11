@@ -13,8 +13,8 @@ This project is an online restaurant ordering web application.
 | Scheduled Ordering | [Frontend](frontend/src/components/ScheduleOrder/) | Andy Le |
 | Payment Management |  | Joonghyuk Seong |
 | Address Management |  | Joonghyuk Seong |
-| Menu list |  | ReiJiang Wong |
-| Menu searching |  | ReiJiang Wong |
+| Menu list |[Backend]  | ReiJiang Wong |
+| Menu searching | [Backend] | ReiJiang Wong |
 | Order History |  | Aryan Gupta |
 | Feedback |  | Aryan Gupta |
 
