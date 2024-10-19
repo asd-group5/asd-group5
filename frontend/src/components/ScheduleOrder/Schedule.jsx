@@ -1,4 +1,6 @@
-const Schedule = ({order, instructions}) =>{
+import './Schedule.css'
+
+const Schedule = ({order, instructions, total}) =>{
     console.log(order);
 return(
     <div>
@@ -6,20 +8,35 @@ return(
         {order.map((item) =>{
             return(
                 <p>
-                    {item.name} ${item.totalPrice}
-                    <br/>
+                    <dl>
+                        <dt>
+                            <h4>
+                                {item.name} ${item.totalPrice}
+                            </h4>
+                        </dt>
+                        <dd>
+                        {item.hasOwnProperty("required") ? 
+                        <>
+                            Selected: {item['required'][item['selected']]['option_name']}  
+                        </>
+                            :null}
+                        </dd>
+                    </dl>
+                    <ul>   
                     {item.hasOwnProperty("custom") ? 
                         item['custom'].map((element) =>(
-                            element['option_name'] + " " + element['option_price'] + " " + element['checked'] + " ")) 
+                            <li>
+                            {element['option_name'] + " " + element['option_price'] + " " + element['checked'] + " "}
+                            </li>)) 
                         :null}
-                    {item.hasOwnProperty("required") ? 
-                    <>
-                        Selected: {item['required'][item['selected']]['option_name']}  
-                    </>
-                    :null}
+                    </ul>
                 </p>
             )
         })}
+
+        <p>
+            Total price: ${total}
+        </p>
         {instructions ? 
                     <p>Instructions provided: {instructions}</p> : 
                     <p>No instructions provided</p>}
