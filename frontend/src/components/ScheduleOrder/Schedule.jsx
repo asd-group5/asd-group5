@@ -1,3 +1,4 @@
+import DeliveryOptions from './DeliveryOptions';
 import './Schedule.css'
 
 const Schedule = ({order, instructions, total}) =>{
@@ -40,6 +41,8 @@ return(
         {instructions ? 
                     <p>Instructions provided: {instructions}</p> : 
                     <p>No instructions provided</p>}
+
+        <DeliveryOptions/>
     </div>
 )
 

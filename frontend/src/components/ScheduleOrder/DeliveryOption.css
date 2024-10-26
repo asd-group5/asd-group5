@@ -1,0 +1,20 @@
+.delivery{
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+}
+
+.delivery > button{
+    margin-bottom: 10px;
+}
+
+.deliveryButton{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 0;
+    padding: 15px;
+    font-size: 1.2em;
+    margin: 4px;
+    text-align: left;
+}

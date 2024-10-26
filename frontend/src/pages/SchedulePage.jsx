@@ -9,10 +9,6 @@ const SchedulePage = () => {
             <h1>Schedule</h1>
             This is the schedule page
             <Schedule order={order} instructions={instructions} total={total}/>
-
-            <button>
-                Order Now
-            </button>
         </div>
     );
 };
