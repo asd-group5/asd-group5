@@ -1,9 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { getValidToken } from "../../utils/auth";
 
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = "http://localhost:8000/";
 
 const AddressComponent = () => {
+  // Validation helper functions
+  const validatePhoneNumber = (phone) => {
+    const phoneRegex = /^[0-9]{10,11}$/;
+    return phoneRegex.test(phone.replace(/-/g, ""));
+  };
+
+  const validatePostalCode = (code) => {
+    const postalRegex = /^[0-9]{4}$/;
+    return postalRegex.test(code);
+  };
+
+  const validateNotEmpty = (value) => {
+    return value.trim().length > 0;
+  };
+
+  // States
   const [addresses, setAddresses] = useState([]);
   const [newAddress, setNewAddress] = useState({
     name: "",
@@ -13,7 +29,7 @@ const AddressComponent = () => {
     city: "",
     state: "",
     postal_code: "",
-    country: "South Korea",
+    country: "Ausatalia",
     address_type: "HOME",
     delivery_instructions: "",
     is_default: false,
@@ -21,10 +37,61 @@ const AddressComponent = () => {
   const [editingAddressId, setEditingAddressId] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({
+    name: "",
+    phone_number: "",
+    street_address: "",
+    detail_address: "",
+    city: "",
+    state: "",
+    postal_code: "",
+  });
 
   useEffect(() => {
     fetchAddresses();
   }, []);
+
+  const validateForm = () => {
+    const errors = {};
+
+    // Name validation
+    if (!validateNotEmpty(newAddress.name)) {
+      errors.name = "Recipient name is required";
+    }
+
+    // Phone number validation
+    if (!validatePhoneNumber(newAddress.phone_number)) {
+      errors.phone_number = "Please enter a valid phone number (10-11 digits)";
+    }
+
+    // Street address validation
+    if (!validateNotEmpty(newAddress.street_address)) {
+      errors.street_address = "Street address is required";
+    }
+
+    // Detail address validation
+    if (!validateNotEmpty(newAddress.detail_address)) {
+      errors.detail_address = "Detail address is required";
+    }
+
+    // City validation
+    if (!validateNotEmpty(newAddress.city)) {
+      errors.city = "City is required";
+    }
+
+    // State validation
+    if (!validateNotEmpty(newAddress.state)) {
+      errors.state = "State is required";
+    }
+
+    // Postal code validation
+    if (!validatePostalCode(newAddress.postal_code)) {
+      errors.postal_code = "Please enter a valid 4-digit postal code";
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const fetchAddresses = async () => {
     try {
@@ -50,10 +117,25 @@ const AddressComponent = () => {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+
+    // Clear error for the field being edited
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate form before submission
+    if (!validateForm()) {
+      setError("Please correct the errors in the form.");
+      return;
+    }
+
     try {
       const token = await getValidToken();
       const url = editingAddressId
@@ -99,6 +181,7 @@ const AddressComponent = () => {
       is_default: false,
     });
     setEditingAddressId(null);
+    setFieldErrors({});
   };
 
   const handleSetDefault = async (id) => {
@@ -156,20 +239,25 @@ const AddressComponent = () => {
     >
       <div
         style={{
-          maxWidth: "64rem",
+          maxWidth: "56rem",
           margin: "0 auto",
+          backgroundColor: "white",
+          borderRadius: "0.5rem",
+          padding: "2rem",
+          boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
         }}
       >
-        {/* 알림 메시지 */}
         {error && (
           <div
             style={{
               backgroundColor: "#fee2e2",
-              borderColor: "#f87171",
-              color: "#b91c1c",
+              border: "2px solid #f87171",
+              color: "#991b1b",
               padding: "1rem",
               borderRadius: "0.375rem",
               marginBottom: "1rem",
+              fontSize: "1rem",
+              fontWeight: "500",
             }}
           >
             {error}
@@ -180,34 +268,36 @@ const AddressComponent = () => {
           <div
             style={{
               backgroundColor: "#dcfce7",
-              borderColor: "#4ade80",
-              color: "#15803d",
+              border: "2px solid #4ade80",
+              color: "#166534",
               padding: "1rem",
               borderRadius: "0.375rem",
               marginBottom: "1rem",
+              fontSize: "1rem",
+              fontWeight: "500",
             }}
           >
             {success}
           </div>
         )}
 
-        {/* 주소 추가/수정 폼 */}
         <div
           style={{
-            backgroundColor: "white",
-            boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
-            borderRadius: "0.5rem",
-            padding: "1.5rem",
             marginBottom: "2rem",
+            padding: "1.5rem",
+            backgroundColor: "white",
+            borderRadius: "0.5rem",
+            border: "1px solid #e5e7eb",
           }}
         >
           <h2
             style={{
-              fontSize: "1.5rem",
-              fontWeight: "600",
+              fontSize: "1.75rem",
+              fontWeight: "700",
               marginBottom: "1.5rem",
-              paddingBottom: "0.5rem",
-              borderBottom: "1px solid #e5e7eb",
+              color: "#111827",
+              paddingBottom: "0.75rem",
+              borderBottom: "2px solid #e5e7eb",
             }}
           >
             {editingAddressId ? "Edit Address" : "Add New Address"}
@@ -217,19 +307,19 @@ const AddressComponent = () => {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(2, 1fr)",
-                gap: "1rem",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "1.5rem",
                 marginBottom: "1.5rem",
               }}
             >
               {/* Recipient Name */}
-              <div style={{ gridColumn: "1 / 2" }}>
+              <div>
                 <label
                   style={{
                     display: "block",
-                    fontSize: "0.875rem",
-                    fontWeight: "500",
-                    color: "#374151",
+                    fontSize: "1rem",
+                    fontWeight: "600",
+                    color: "#1f2937",
                     marginBottom: "0.5rem",
                   }}
                 >
@@ -244,21 +334,37 @@ const AddressComponent = () => {
                     width: "100%",
                     padding: "0.75rem",
                     borderRadius: "0.375rem",
-                    border: "1px solid #d1d5db",
-                    outline: "none",
+                    border: `2px solid ${
+                      fieldErrors.name ? "#ef4444" : "#d1d5db"
+                    }`,
+                    backgroundColor: "white",
+                    color: "#111827",
+                    fontSize: "1rem",
+                    boxSizing: "border-box",
                   }}
                   required
                 />
+                {fieldErrors.name && (
+                  <div
+                    style={{
+                      color: "#ef4444",
+                      fontSize: "0.875rem",
+                      marginTop: "0.375rem",
+                    }}
+                  >
+                    {fieldErrors.name}
+                  </div>
+                )}
               </div>
 
               {/* Phone Number */}
-              <div style={{ gridColumn: "2 / 3" }}>
+              <div>
                 <label
                   style={{
                     display: "block",
-                    fontSize: "0.875rem",
-                    fontWeight: "500",
-                    color: "#374151",
+                    fontSize: "1rem",
+                    fontWeight: "600",
+                    color: "#1f2937",
                     marginBottom: "0.5rem",
                   }}
                 >
@@ -273,21 +379,37 @@ const AddressComponent = () => {
                     width: "100%",
                     padding: "0.75rem",
                     borderRadius: "0.375rem",
-                    border: "1px solid #d1d5db",
-                    outline: "none",
+                    border: `2px solid ${
+                      fieldErrors.phone_number ? "#ef4444" : "#d1d5db"
+                    }`,
+                    backgroundColor: "white",
+                    color: "#111827",
+                    fontSize: "1rem",
+                    boxSizing: "border-box",
                   }}
                   required
                 />
+                {fieldErrors.phone_number && (
+                  <div
+                    style={{
+                      color: "#ef4444",
+                      fontSize: "0.875rem",
+                      marginTop: "0.375rem",
+                    }}
+                  >
+                    {fieldErrors.phone_number}
+                  </div>
+                )}
               </div>
 
               {/* Street Address */}
-              <div style={{ gridColumn: "1 / 3" }}>
+              <div style={{ gridColumn: "1 / -1" }}>
                 <label
                   style={{
                     display: "block",
-                    fontSize: "0.875rem",
-                    fontWeight: "500",
-                    color: "#374151",
+                    fontSize: "1rem",
+                    fontWeight: "600",
+                    color: "#1f2937",
                     marginBottom: "0.5rem",
                   }}
                 >
@@ -302,21 +424,37 @@ const AddressComponent = () => {
                     width: "100%",
                     padding: "0.75rem",
                     borderRadius: "0.375rem",
-                    border: "1px solid #d1d5db",
-                    outline: "none",
+                    border: `2px solid ${
+                      fieldErrors.street_address ? "#ef4444" : "#d1d5db"
+                    }`,
+                    backgroundColor: "white",
+                    color: "#111827",
+                    fontSize: "1rem",
+                    boxSizing: "border-box",
                   }}
                   required
                 />
+                {fieldErrors.street_address && (
+                  <div
+                    style={{
+                      color: "#ef4444",
+                      fontSize: "0.875rem",
+                      marginTop: "0.375rem",
+                    }}
+                  >
+                    {fieldErrors.street_address}
+                  </div>
+                )}
               </div>
 
               {/* Detail Address */}
-              <div style={{ gridColumn: "1 / 3" }}>
+              <div style={{ gridColumn: "1 / -1" }}>
                 <label
                   style={{
                     display: "block",
-                    fontSize: "0.875rem",
-                    fontWeight: "500",
-                    color: "#374151",
+                    fontSize: "1rem",
+                    fontWeight: "600",
+                    color: "#1f2937",
                     marginBottom: "0.5rem",
                   }}
                 >
@@ -331,21 +469,37 @@ const AddressComponent = () => {
                     width: "100%",
                     padding: "0.75rem",
                     borderRadius: "0.375rem",
-                    border: "1px solid #d1d5db",
-                    outline: "none",
+                    border: `2px solid ${
+                      fieldErrors.detail_address ? "#ef4444" : "#d1d5db"
+                    }`,
+                    backgroundColor: "white",
+                    color: "#111827",
+                    fontSize: "1rem",
+                    boxSizing: "border-box",
                   }}
                   required
                 />
+                {fieldErrors.detail_address && (
+                  <div
+                    style={{
+                      color: "#ef4444",
+                      fontSize: "0.875rem",
+                      marginTop: "0.375rem",
+                    }}
+                  >
+                    {fieldErrors.detail_address}
+                  </div>
+                )}
               </div>
 
-              {/* City and State */}
-              <div style={{ gridColumn: "1 / 2" }}>
+              {/* City */}
+              <div>
                 <label
                   style={{
                     display: "block",
-                    fontSize: "0.875rem",
-                    fontWeight: "500",
-                    color: "#374151",
+                    fontSize: "1rem",
+                    fontWeight: "600",
+                    color: "#1f2937",
                     marginBottom: "0.5rem",
                   }}
                 >
@@ -360,20 +514,37 @@ const AddressComponent = () => {
                     width: "100%",
                     padding: "0.75rem",
                     borderRadius: "0.375rem",
-                    border: "1px solid #d1d5db",
-                    outline: "none",
+                    border: `2px solid ${
+                      fieldErrors.city ? "#ef4444" : "#d1d5db"
+                    }`,
+                    backgroundColor: "white",
+                    color: "#111827",
+                    fontSize: "1rem",
+                    boxSizing: "border-box",
                   }}
                   required
                 />
+                {fieldErrors.city && (
+                  <div
+                    style={{
+                      color: "#ef4444",
+                      fontSize: "0.875rem",
+                      marginTop: "0.375rem",
+                    }}
+                  >
+                    {fieldErrors.city}
+                  </div>
+                )}
               </div>
 
-              <div style={{ gridColumn: "2 / 3" }}>
+              {/* State/Province */}
+              <div>
                 <label
                   style={{
                     display: "block",
-                    fontSize: "0.875rem",
-                    fontWeight: "500",
-                    color: "#374151",
+                    fontSize: "1rem",
+                    fontWeight: "600",
+                    color: "#1f2937",
                     marginBottom: "0.5rem",
                   }}
                 >
@@ -388,21 +559,37 @@ const AddressComponent = () => {
                     width: "100%",
                     padding: "0.75rem",
                     borderRadius: "0.375rem",
-                    border: "1px solid #d1d5db",
-                    outline: "none",
+                    border: `2px solid ${
+                      fieldErrors.state ? "#ef4444" : "#d1d5db"
+                    }`,
+                    backgroundColor: "white",
+                    color: "#111827",
+                    fontSize: "1rem",
+                    boxSizing: "border-box",
                   }}
                   required
                 />
+                {fieldErrors.state && (
+                  <div
+                    style={{
+                      color: "#ef4444",
+                      fontSize: "0.875rem",
+                      marginTop: "0.375rem",
+                    }}
+                  >
+                    {fieldErrors.state}
+                  </div>
+                )}
               </div>
 
-              {/* Postal Code and Address Type */}
-              <div style={{ gridColumn: "1 / 2" }}>
+              {/* Postal Code */}
+              <div>
                 <label
                   style={{
                     display: "block",
-                    fontSize: "0.875rem",
-                    fontWeight: "500",
-                    color: "#374151",
+                    fontSize: "1rem",
+                    fontWeight: "600",
+                    color: "#1f2937",
                     marginBottom: "0.5rem",
                   }}
                 >
@@ -417,20 +604,37 @@ const AddressComponent = () => {
                     width: "100%",
                     padding: "0.75rem",
                     borderRadius: "0.375rem",
-                    border: "1px solid #d1d5db",
-                    outline: "none",
+                    border: `2px solid ${
+                      fieldErrors.postal_code ? "#ef4444" : "#d1d5db"
+                    }`,
+                    backgroundColor: "white",
+                    color: "#111827",
+                    fontSize: "1rem",
+                    boxSizing: "border-box",
                   }}
                   required
                 />
+                {fieldErrors.postal_code && (
+                  <div
+                    style={{
+                      color: "#ef4444",
+                      fontSize: "0.875rem",
+                      marginTop: "0.375rem",
+                    }}
+                  >
+                    {fieldErrors.postal_code}
+                  </div>
+                )}
               </div>
 
-              <div style={{ gridColumn: "2 / 3" }}>
+              {/* Address Type */}
+              <div>
                 <label
                   style={{
                     display: "block",
-                    fontSize: "0.875rem",
-                    fontWeight: "500",
-                    color: "#374151",
+                    fontSize: "1rem",
+                    fontWeight: "600",
+                    color: "#1f2937",
                     marginBottom: "0.5rem",
                   }}
                 >
@@ -444,24 +648,34 @@ const AddressComponent = () => {
                     width: "100%",
                     padding: "0.75rem",
                     borderRadius: "0.375rem",
-                    border: "1px solid #d1d5db",
-                    outline: "none",
+                    border: "2px solid #d1d5db",
+                    backgroundColor: "white",
+                    color: "#111827",
+                    fontSize: "1rem",
+                    boxSizing: "border-box",
+                    cursor: "pointer",
                   }}
                 >
-                  <option value="HOME">Home</option>
-                  <option value="OFFICE">Office</option>
-                  <option value="OTHER">Other</option>
+                  <option value="HOME" style={{ color: "#111827" }}>
+                    Home
+                  </option>
+                  <option value="OFFICE" style={{ color: "#111827" }}>
+                    Office
+                  </option>
+                  <option value="OTHER" style={{ color: "#111827" }}>
+                    Other
+                  </option>
                 </select>
               </div>
 
               {/* Delivery Instructions */}
-              <div style={{ gridColumn: "1 / 3" }}>
+              <div style={{ gridColumn: "1 / -1" }}>
                 <label
                   style={{
                     display: "block",
-                    fontSize: "0.875rem",
-                    fontWeight: "500",
-                    color: "#374151",
+                    fontSize: "1rem",
+                    fontWeight: "600",
+                    color: "#1f2937",
                     marginBottom: "0.5rem",
                   }}
                 >
@@ -475,20 +689,25 @@ const AddressComponent = () => {
                     width: "100%",
                     padding: "0.75rem",
                     borderRadius: "0.375rem",
-                    border: "1px solid #d1d5db",
-                    outline: "none",
+                    border: "2px solid #d1d5db",
+                    backgroundColor: "white",
+                    color: "#111827",
+                    fontSize: "1rem",
+                    boxSizing: "border-box",
                     minHeight: "100px",
+                    resize: "vertical",
                   }}
                 />
               </div>
             </div>
 
-            {/* Form Buttons */}
+            {/* Submit Button */}
             <div
               style={{
                 display: "flex",
                 justifyContent: "flex-end",
                 gap: "1rem",
+                marginTop: "2rem",
               }}
             >
               {editingAddressId && (
@@ -497,10 +716,13 @@ const AddressComponent = () => {
                   onClick={resetForm}
                   style={{
                     padding: "0.75rem 1.5rem",
-                    borderRadius: "0.375rem",
                     backgroundColor: "#f3f4f6",
                     color: "#374151",
-                    border: "1px solid #d1d5db",
+                    border: "2px solid #d1d5db",
+                    borderRadius: "0.375rem",
+                    fontSize: "1rem",
+                    fontWeight: "500",
+                    cursor: "pointer",
                   }}
                 >
                   Cancel
@@ -510,11 +732,14 @@ const AddressComponent = () => {
                 type="submit"
                 style={{
                   padding: "0.75rem 1.5rem",
-                  borderRadius: "0.375rem",
-                  backgroundColor: "#3b82f6",
+                  backgroundColor: "#2563eb",
                   color: "white",
                   border: "none",
+                  borderRadius: "0.375rem",
+                  fontSize: "1rem",
+                  fontWeight: "500",
                   cursor: "pointer",
+                  boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
                 }}
               >
                 {editingAddressId ? "Update" : "Save"} Address
@@ -523,22 +748,23 @@ const AddressComponent = () => {
           </form>
         </div>
 
-        {/* Address List */}
+        {/* Existing Addresses List */}
         <div
           style={{
-            backgroundColor: "white",
-            boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
-            borderRadius: "0.5rem",
             padding: "1.5rem",
+            backgroundColor: "white",
+            borderRadius: "0.5rem",
+            border: "1px solid #e5e7eb",
           }}
         >
           <h2
             style={{
-              fontSize: "1.5rem",
-              fontWeight: "600",
+              fontSize: "1.75rem",
+              fontWeight: "700",
               marginBottom: "1.5rem",
-              paddingBottom: "0.5rem",
-              borderBottom: "1px solid #e5e7eb",
+              color: "#111827",
+              paddingBottom: "0.75rem",
+              borderBottom: "2px solid #e5e7eb",
             }}
           >
             Your Addresses
@@ -554,43 +780,38 @@ const AddressComponent = () => {
                   padding: "1.5rem",
                   borderRadius: "0.5rem",
                   border: `2px solid ${
-                    address.is_default ? "#3b82f6" : "#e5e7eb"
+                    address.is_default ? "#2563eb" : "#e5e7eb"
                   }`,
-                  backgroundColor: address.is_default ? "#f0f9ff" : "white",
+                  backgroundColor: address.is_default ? "#f0f7ff" : "white",
                 }}
               >
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    alignItems: "flex-start",
+                    alignItems: "center",
                   }}
                 >
                   <div>
                     <div
                       style={{
+                        fontSize: "1.125rem",
+                        fontWeight: "600",
+                        color: "#111827",
                         display: "flex",
                         alignItems: "center",
                         gap: "0.5rem",
-                        marginBottom: "0.5rem",
                       }}
                     >
-                      <span
-                        style={{
-                          fontSize: "1.125rem",
-                          fontWeight: "600",
-                        }}
-                      >
-                        {address.name}
-                      </span>
+                      {address.name}
                       {address.is_default && (
                         <span
                           style={{
+                            fontSize: "0.875rem",
+                            color: "#2563eb",
                             backgroundColor: "#dbeafe",
-                            color: "#1e40af",
                             padding: "0.25rem 0.5rem",
                             borderRadius: "0.25rem",
-                            fontSize: "0.75rem",
                             fontWeight: "500",
                           }}
                         >
@@ -598,39 +819,39 @@ const AddressComponent = () => {
                         </span>
                       )}
                     </div>
-                    <p style={{ color: "#4b5563", marginBottom: "0.25rem" }}>
+                    <p style={{ color: "#4b5563", margin: "0.25rem 0" }}>
+                      {address.phone_number}
+                    </p>
+                    <p style={{ color: "#4b5563", margin: "0.25rem 0" }}>
                       {address.street_address}
                     </p>
                     {address.detail_address && (
-                      <p style={{ color: "#4b5563", marginBottom: "0.25rem" }}>
+                      <p style={{ color: "#4b5563", margin: "0.25rem 0" }}>
                         {address.detail_address}
                       </p>
                     )}
-                    <p style={{ color: "#4b5563", marginBottom: "0.25rem" }}>
+                    <p style={{ color: "#4b5563", margin: "0.25rem 0" }}>
                       {address.city}, {address.state} {address.postal_code}
-                    </p>
-                    <p style={{ color: "#4b5563", marginBottom: "0.25rem" }}>
-                      {address.phone_number}
                     </p>
                     {address.delivery_instructions && (
                       <p
                         style={{
                           color: "#6b7280",
-                          marginTop: "0.5rem",
+                          margin: "0.75rem 0 0",
+                          padding: "0.75rem",
                           backgroundColor: "#f9fafb",
-                          padding: "0.5rem",
                           borderRadius: "0.375rem",
+                          fontSize: "0.875rem",
                         }}
                       >
                         Note: {address.delivery_instructions}
                       </p>
                     )}
                   </div>
-
                   <div
                     style={{
                       display: "flex",
-                      gap: "0.5rem",
+                      gap: "0.75rem",
                     }}
                   >
                     {!address.is_default && (
@@ -638,10 +859,12 @@ const AddressComponent = () => {
                         onClick={() => handleSetDefault(address.id)}
                         style={{
                           padding: "0.5rem 1rem",
-                          color: "#3b82f6",
-                          borderRadius: "0.375rem",
+                          backgroundColor: "#dbeafe",
+                          color: "#2563eb",
                           border: "none",
-                          backgroundColor: "#f0f9ff",
+                          borderRadius: "0.375rem",
+                          fontSize: "0.875rem",
+                          fontWeight: "500",
                           cursor: "pointer",
                         }}
                       >
@@ -656,10 +879,12 @@ const AddressComponent = () => {
                       }}
                       style={{
                         padding: "0.5rem 1rem",
-                        color: "#4b5563",
-                        borderRadius: "0.375rem",
-                        border: "none",
                         backgroundColor: "#f3f4f6",
+                        color: "#4b5563",
+                        border: "none",
+                        borderRadius: "0.375rem",
+                        fontSize: "0.875rem",
+                        fontWeight: "500",
                         cursor: "pointer",
                       }}
                     >
@@ -669,10 +894,12 @@ const AddressComponent = () => {
                       onClick={() => handleDelete(address.id)}
                       style={{
                         padding: "0.5rem 1rem",
-                        color: "#dc2626",
-                        borderRadius: "0.375rem",
-                        border: "none",
                         backgroundColor: "#fef2f2",
+                        color: "#dc2626",
+                        border: "none",
+                        borderRadius: "0.375rem",
+                        fontSize: "0.875rem",
+                        fontWeight: "500",
                         cursor: "pointer",
                       }}
                     >
@@ -686,12 +913,18 @@ const AddressComponent = () => {
               <div
                 style={{
                   textAlign: "center",
-                  padding: "3rem 0",
+                  padding: "3rem",
+                  backgroundColor: "#f9fafb",
+                  borderRadius: "0.5rem",
                   color: "#6b7280",
                 }}
               >
-                <p>No addresses added yet.</p>
-                <p>Add your first address above.</p>
+                <p style={{ fontSize: "1rem", marginBottom: "0.5rem" }}>
+                  No addresses added yet.
+                </p>
+                <p style={{ fontSize: "0.875rem" }}>
+                  Add your first address above.
+                </p>
               </div>
             )}
           </div>
