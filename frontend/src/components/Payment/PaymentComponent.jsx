@@ -3,9 +3,39 @@ import { useNavigate } from "react-router-dom";
 import { getValidToken } from "../../utils/auth";
 
 const PaymentComponent = () => {
-  const BASE_URL = "http://localhost:8000";
+  const BASE_URL = "http://localhost:8000/api";
   const navigate = useNavigate();
 
+  // Validation helper functions
+  const validateCardNumber = (number) => {
+    const cardRegex = /^[0-9]{16}$/;
+    return cardRegex.test(number);
+  };
+
+  const validateExpiryDate = (date) => {
+    const dateRegex = /^(0[1-9]|1[0-2])\/([0-9]{2})$/;
+    if (!dateRegex.test(date)) return false;
+
+    const [month, year] = date.split("/");
+    const expiry = new Date(2000 + parseInt(year), parseInt(month) - 1);
+    const today = new Date();
+    return expiry > today;
+  };
+
+  const validateCVV = (cvv) => {
+    const cvvRegex = /^[0-9]{3,4}$/;
+    return cvvRegex.test(cvv);
+  };
+
+  const validateAmount = (amount) => {
+    return amount > 0;
+  };
+
+  const validateNotEmpty = (value) => {
+    return value.trim().length > 0;
+  };
+
+  // States
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [newPaymentMethod, setNewPaymentMethod] = useState({
     name: "",
@@ -20,15 +50,61 @@ const PaymentComponent = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({
+    card_holder_name: "",
+    card_number: "",
+    expiry_date: "",
+    cvv: "",
+    amount: "",
+    payment_method: "",
+  });
 
   useEffect(() => {
     getPaymentMethods();
   }, []);
 
+  const validatePaymentMethodForm = () => {
+    const errors = {};
+
+    if (!validateNotEmpty(newPaymentMethod.card_holder_name)) {
+      errors.card_holder_name = "Card holder name is required";
+    }
+
+    if (!validateCardNumber(newPaymentMethod.card_number)) {
+      errors.card_number = "Please enter a valid 16-digit card number";
+    }
+
+    if (!validateExpiryDate(newPaymentMethod.expiry_date)) {
+      errors.expiry_date =
+        "Please enter a valid expiry date (MM/YY) in the future";
+    }
+
+    if (!validateCVV(newPaymentMethod.cvv)) {
+      errors.cvv = "Please enter a valid CVV (3-4 digits)";
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const validatePaymentForm = () => {
+    const errors = {};
+
+    if (!validateAmount(parseFloat(paymentAmount))) {
+      errors.amount = "Please enter a valid amount greater than 0";
+    }
+
+    if (!selectedPaymentMethod) {
+      errors.payment_method = "Please select a payment method";
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
   const getPaymentMethods = async () => {
     try {
       const token = await getValidToken();
-      const response = await fetch(`${BASE_URL}/api/payment/methods/`, {
+      const response = await fetch(`${BASE_URL}/payment/methods/`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -47,7 +123,7 @@ const PaymentComponent = () => {
     try {
       const token = await getValidToken();
       const response = await fetch(
-        `${BASE_URL}/api/payment/methods/${id}/set-default/`,
+        `${BASE_URL}/payment/methods/${id}/set-default/`,
         {
           method: "POST",
           headers: {
@@ -72,7 +148,7 @@ const PaymentComponent = () => {
 
     try {
       const token = await getValidToken();
-      const response = await fetch(`${BASE_URL}/api/payment/methods/${id}/`, {
+      const response = await fetch(`${BASE_URL}/payment/methods/${id}/`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -90,9 +166,15 @@ const PaymentComponent = () => {
 
   const addPaymentMethod = async (e) => {
     e.preventDefault();
+
+    if (!validatePaymentMethodForm()) {
+      setError("Please correct the errors in the form");
+      return;
+    }
+
     try {
       const token = await getValidToken();
-      const response = await fetch(`${BASE_URL}/api/payment/methods/add/`, {
+      const response = await fetch(`${BASE_URL}/payment/methods/add/`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -122,6 +204,7 @@ const PaymentComponent = () => {
         card_holder_name: "",
         is_default: false,
       });
+      setFieldErrors({});
       setSuccess("Payment method added successfully");
       setTimeout(() => setSuccess(null), 3000);
     } catch (error) {
@@ -132,9 +215,15 @@ const PaymentComponent = () => {
 
   const processPayment = async (e) => {
     e.preventDefault();
+
+    if (!validatePaymentForm()) {
+      setError("Please correct the errors in the form");
+      return;
+    }
+
     try {
       const token = await getValidToken();
-      const response = await fetch(`${BASE_URL}/api/payment/process/`, {
+      const response = await fetch(`${BASE_URL}/payment/process/`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -183,7 +272,7 @@ const PaymentComponent = () => {
           boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
         }}
       >
-        {/* 알림 메시지 */}
+        {/* Error and Success Messages */}
         {error && (
           <div
             style={{
@@ -240,19 +329,14 @@ const PaymentComponent = () => {
           >
             Add Payment Method
           </h2>
-          <form
-            onSubmit={addPaymentMethod}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "1.5rem",
-            }}
-          >
+
+          <form onSubmit={addPaymentMethod}>
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 gap: "1.5rem",
+                marginBottom: "1.5rem",
               }}
             >
               {/* Card Holder Name */}
@@ -271,17 +355,23 @@ const PaymentComponent = () => {
                 <input
                   type="text"
                   value={newPaymentMethod.card_holder_name}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setNewPaymentMethod({
                       ...newPaymentMethod,
                       card_holder_name: e.target.value,
-                    })
-                  }
+                    });
+                    setFieldErrors({
+                      ...fieldErrors,
+                      card_holder_name: "",
+                    });
+                  }}
                   style={{
                     width: "100%",
                     padding: "0.75rem",
                     borderRadius: "0.375rem",
-                    border: "2px solid #d1d5db",
+                    border: `2px solid ${
+                      fieldErrors.card_holder_name ? "#ef4444" : "#d1d5db"
+                    }`,
                     backgroundColor: "white",
                     color: "#111827",
                     fontSize: "1rem",
@@ -289,6 +379,17 @@ const PaymentComponent = () => {
                   }}
                   required
                 />
+                {fieldErrors.card_holder_name && (
+                  <div
+                    style={{
+                      color: "#ef4444",
+                      fontSize: "0.875rem",
+                      marginTop: "0.375rem",
+                    }}
+                  >
+                    {fieldErrors.card_holder_name}
+                  </div>
+                )}
               </div>
 
               {/* Card Type */}
@@ -324,16 +425,10 @@ const PaymentComponent = () => {
                     cursor: "pointer",
                   }}
                 >
-                  <option
-                    value="CREDIT"
-                    style={{ color: "#111827", backgroundColor: "white" }}
-                  >
+                  <option value="CREDIT" style={{ color: "#111827" }}>
                     Credit Card
                   </option>
-                  <option
-                    value="DEBIT"
-                    style={{ color: "#111827", backgroundColor: "white" }}
-                  >
+                  <option value="DEBIT" style={{ color: "#111827" }}>
                     Debit Card
                   </option>
                 </select>
@@ -355,17 +450,23 @@ const PaymentComponent = () => {
                 <input
                   type="text"
                   value={newPaymentMethod.card_number}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setNewPaymentMethod({
                       ...newPaymentMethod,
                       card_number: e.target.value,
-                    })
-                  }
+                    });
+                    setFieldErrors({
+                      ...fieldErrors,
+                      card_number: "",
+                    });
+                  }}
                   style={{
                     width: "100%",
                     padding: "0.75rem",
                     borderRadius: "0.375rem",
-                    border: "2px solid #d1d5db",
+                    border: `2px solid ${
+                      fieldErrors.card_number ? "#ef4444" : "#d1d5db"
+                    }`,
                     backgroundColor: "white",
                     color: "#111827",
                     fontSize: "1rem",
@@ -374,9 +475,20 @@ const PaymentComponent = () => {
                   maxLength="16"
                   required
                 />
+                {fieldErrors.card_number && (
+                  <div
+                    style={{
+                      color: "#ef4444",
+                      fontSize: "0.875rem",
+                      marginTop: "0.375rem",
+                    }}
+                  >
+                    {fieldErrors.card_number}
+                  </div>
+                )}
               </div>
 
-              {/* Expiry Date & CVV */}
+              {/* Expiry Date */}
               <div>
                 <label
                   style={{
@@ -393,17 +505,23 @@ const PaymentComponent = () => {
                   type="text"
                   placeholder="MM/YY"
                   value={newPaymentMethod.expiry_date}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setNewPaymentMethod({
                       ...newPaymentMethod,
                       expiry_date: e.target.value,
-                    })
-                  }
+                    });
+                    setFieldErrors({
+                      ...fieldErrors,
+                      expiry_date: "",
+                    });
+                  }}
                   style={{
                     width: "100%",
                     padding: "0.75rem",
                     borderRadius: "0.375rem",
-                    border: "2px solid #d1d5db",
+                    border: `2px solid ${
+                      fieldErrors.expiry_date ? "#ef4444" : "#d1d5db"
+                    }`,
                     backgroundColor: "white",
                     color: "#111827",
                     fontSize: "1rem",
@@ -412,7 +530,20 @@ const PaymentComponent = () => {
                   maxLength="5"
                   required
                 />
+                {fieldErrors.expiry_date && (
+                  <div
+                    style={{
+                      color: "#ef4444",
+                      fontSize: "0.875rem",
+                      marginTop: "0.375rem",
+                    }}
+                  >
+                    {fieldErrors.expiry_date}
+                  </div>
+                )}
               </div>
+
+              {/* CVV */}
               <div>
                 <label
                   style={{
@@ -428,17 +559,23 @@ const PaymentComponent = () => {
                 <input
                   type="text"
                   value={newPaymentMethod.cvv}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setNewPaymentMethod({
                       ...newPaymentMethod,
                       cvv: e.target.value,
-                    })
-                  }
+                    });
+                    setFieldErrors({
+                      ...fieldErrors,
+                      cvv: "",
+                    });
+                  }}
                   style={{
                     width: "100%",
                     padding: "0.75rem",
                     borderRadius: "0.375rem",
-                    border: "2px solid #d1d5db",
+                    border: `2px solid ${
+                      fieldErrors.cvv ? "#ef4444" : "#d1d5db"
+                    }`,
                     backgroundColor: "white",
                     color: "#111827",
                     fontSize: "1rem",
@@ -447,10 +584,26 @@ const PaymentComponent = () => {
                   maxLength="4"
                   required
                 />
+                {fieldErrors.cvv && (
+                  <div
+                    style={{
+                      color: "#ef4444",
+                      fontSize: "0.875rem",
+                      marginTop: "0.375rem",
+                    }}
+                  >
+                    {fieldErrors.cvv}
+                  </div>
+                )}
               </div>
             </div>
 
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+              }}
+            >
               <button
                 type="submit"
                 style={{
@@ -470,7 +623,8 @@ const PaymentComponent = () => {
             </div>
           </form>
         </div>
-        {/* Make Payment Section */}
+
+        {/* Make Payment Form */}
         <div
           style={{
             marginBottom: "2rem",
@@ -492,21 +646,17 @@ const PaymentComponent = () => {
           >
             Make Payment
           </h2>
-          <form
-            onSubmit={processPayment}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "1.5rem",
-            }}
-          >
+
+          <form onSubmit={processPayment}>
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 gap: "1.5rem",
+                marginBottom: "1.5rem",
               }}
             >
+              {/* Amount */}
               <div>
                 <label
                   style={{
@@ -524,12 +674,20 @@ const PaymentComponent = () => {
                   min="0"
                   step="0.01"
                   value={paymentAmount}
-                  onChange={(e) => setPaymentAmount(e.target.value)}
+                  onChange={(e) => {
+                    setPaymentAmount(e.target.value);
+                    setFieldErrors({
+                      ...fieldErrors,
+                      amount: "",
+                    });
+                  }}
                   style={{
                     width: "100%",
                     padding: "0.75rem",
                     borderRadius: "0.375rem",
-                    border: "2px solid #d1d5db",
+                    border: `2px solid ${
+                      fieldErrors.amount ? "#ef4444" : "#d1d5db"
+                    }`,
                     backgroundColor: "white",
                     color: "#111827",
                     fontSize: "1rem",
@@ -537,7 +695,20 @@ const PaymentComponent = () => {
                   }}
                   required
                 />
+                {fieldErrors.amount && (
+                  <div
+                    style={{
+                      color: "#ef4444",
+                      fontSize: "0.875rem",
+                      marginTop: "0.375rem",
+                    }}
+                  >
+                    {fieldErrors.amount}
+                  </div>
+                )}
               </div>
+
+              {/* Select Payment Method */}
               <div>
                 <label
                   style={{
@@ -552,12 +723,20 @@ const PaymentComponent = () => {
                 </label>
                 <select
                   value={selectedPaymentMethod}
-                  onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                  onChange={(e) => {
+                    setSelectedPaymentMethod(e.target.value);
+                    setFieldErrors({
+                      ...fieldErrors,
+                      payment_method: "",
+                    });
+                  }}
                   style={{
                     width: "100%",
                     padding: "0.75rem",
                     borderRadius: "0.375rem",
-                    border: "2px solid #d1d5db",
+                    border: `2px solid ${
+                      fieldErrors.payment_method ? "#ef4444" : "#d1d5db"
+                    }`,
                     backgroundColor: "white",
                     color: "#111827",
                     fontSize: "1rem",
@@ -566,9 +745,7 @@ const PaymentComponent = () => {
                   }}
                   required
                 >
-                  <option value="" style={{ color: "#6b7280" }}>
-                    Select a payment method
-                  </option>
+                  <option value="">Select a payment method</option>
                   {paymentMethods.map((method) => (
                     <option
                       key={method.id}
@@ -582,9 +759,26 @@ const PaymentComponent = () => {
                     </option>
                   ))}
                 </select>
+                {fieldErrors.payment_method && (
+                  <div
+                    style={{
+                      color: "#ef4444",
+                      fontSize: "0.875rem",
+                      marginTop: "0.375rem",
+                    }}
+                  >
+                    {fieldErrors.payment_method}
+                  </div>
+                )}
               </div>
             </div>
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+              }}
+            >
               <button
                 type="submit"
                 style={{
@@ -604,153 +798,132 @@ const PaymentComponent = () => {
             </div>
           </form>
         </div>
-
-        {/* Saved Payment Methods Section */}
-        <div
-          style={{
-            padding: "1.5rem",
-            backgroundColor: "white",
-            borderRadius: "0.5rem",
-            border: "1px solid #e5e7eb",
-          }}
-        >
-          <h2
+        {/* Saved Payment Methods */}
+        {paymentMethods.map((method) => (
+          <div
+            key={method.id}
             style={{
-              fontSize: "1.75rem",
-              fontWeight: "700",
-              marginBottom: "1.5rem",
-              color: "#111827",
-              paddingBottom: "0.75rem",
-              borderBottom: "2px solid #e5e7eb",
+              padding: "1.5rem",
+              borderRadius: "0.5rem",
+              border: `2px solid ${method.is_default ? "#2563eb" : "#e5e7eb"}`,
+              backgroundColor: method.is_default ? "#f0f7ff" : "white",
             }}
           >
-            Saved Payment Methods
-          </h2>
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-          >
-            {paymentMethods.map((method) => (
-              <div
-                key={method.id}
-                style={{
-                  padding: "1.5rem",
-                  borderRadius: "0.5rem",
-                  border: `2px solid ${
-                    method.is_default ? "#2563eb" : "#e5e7eb"
-                  }`,
-                  backgroundColor: method.is_default ? "#f0f7ff" : "white",
-                }}
-              >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <div>
                 <div
                   style={{
+                    fontSize: "1.125rem",
+                    fontWeight: "600",
+                    color: "#111827",
                     display: "flex",
-                    justifyContent: "space-between",
                     alignItems: "center",
+                    gap: "0.5rem",
                   }}
                 >
-                  <div>
-                    <div
-                      style={{
-                        fontSize: "1.125rem",
-                        fontWeight: "600",
-                        color: "#111827",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.5rem",
-                      }}
-                    >
-                      {method.card_type} - ****{" "}
-                      {method.card_number
-                        ? method.card_number.slice(-4)
-                        : "XXXX"}
-                      {method.is_default && (
-                        <span
-                          style={{
-                            fontSize: "0.875rem",
-                            color: "#2563eb",
-                            backgroundColor: "#dbeafe",
-                            padding: "0.25rem 0.5rem",
-                            borderRadius: "0.25rem",
-                            fontWeight: "500",
-                          }}
-                        >
-                          Default
-                        </span>
-                      )}
-                    </div>
-                    <div
+                  {method.card_type} - {method.card_number_masked}
+                  {method.is_default && (
+                    <span
                       style={{
                         fontSize: "0.875rem",
-                        color: "#6b7280",
-                        marginTop: "0.25rem",
-                      }}
-                    >
-                      {method.card_holder_name || method.name} | Expires:{" "}
-                      {method.expiry_date}
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "0.75rem",
-                    }}
-                  >
-                    {!method.is_default && (
-                      <button
-                        onClick={() => handleSetDefault(method.id)}
-                        style={{
-                          padding: "0.5rem 1rem",
-                          backgroundColor: "#dbeafe",
-                          color: "#2563eb",
-                          border: "none",
-                          borderRadius: "0.375rem",
-                          fontSize: "0.875rem",
-                          fontWeight: "500",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Set Default
-                      </button>
-                    )}
-                    <button
-                      onClick={() => handleDelete(method.id)}
-                      style={{
-                        padding: "0.5rem 1rem",
-                        backgroundColor: "#fef2f2",
-                        color: "#dc2626",
-                        border: "none",
-                        borderRadius: "0.375rem",
-                        fontSize: "0.875rem",
+                        color: "#2563eb",
+                        backgroundColor: "#dbeafe",
+                        padding: "0.25rem 0.5rem",
+                        borderRadius: "0.25rem",
                         fontWeight: "500",
-                        cursor: "pointer",
                       }}
                     >
-                      Delete
-                    </button>
-                  </div>
+                      Default
+                    </span>
+                  )}
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.875rem",
+                    color: "#6b7280",
+                    marginTop: "0.25rem",
+                  }}
+                >
+                  <span style={{ color: "#4b5563", fontWeight: "500" }}>
+                    {method.name}
+                  </span>{" "}
+                  | Expires: {method.expiry_date}
                 </div>
               </div>
-            ))}
-            {paymentMethods.length === 0 && (
               <div
                 style={{
-                  textAlign: "center",
-                  padding: "3rem",
-                  backgroundColor: "#f9fafb",
-                  borderRadius: "0.5rem",
-                  color: "#6b7280",
+                  display: "flex",
+                  gap: "0.75rem",
                 }}
               >
-                <p style={{ fontSize: "1rem", marginBottom: "0.5rem" }}>
-                  No payment methods added yet.
-                </p>
-                <p style={{ fontSize: "0.875rem" }}>
-                  Add your first payment method above.
-                </p>
+                {!method.is_default && (
+                  <button
+                    onClick={() => handleSetDefault(method.id)}
+                    style={{
+                      padding: "0.5rem 1rem",
+                      backgroundColor: "#dbeafe",
+                      color: "#2563eb",
+                      border: "none",
+                      borderRadius: "0.375rem",
+                      fontSize: "0.875rem",
+                      fontWeight: "500",
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      hover: {
+                        backgroundColor: "#bfdbfe",
+                      },
+                    }}
+                  >
+                    Set Default
+                  </button>
+                )}
+                <button
+                  onClick={() => handleDelete(method.id)}
+                  style={{
+                    padding: "0.5rem 1rem",
+                    backgroundColor: "#fef2f2",
+                    color: "#dc2626",
+                    border: "none",
+                    borderRadius: "0.375rem",
+                    fontSize: "0.875rem",
+                    fontWeight: "500",
+                    cursor: "pointer",
+                    transition: "all 0.2s",
+                    hover: {
+                      backgroundColor: "#fee2e2",
+                    },
+                  }}
+                >
+                  Delete
+                </button>
               </div>
-            )}
+            </div>
           </div>
-        </div>
+        ))}
+        {paymentMethods.length === 0 && (
+          <div
+            style={{
+              textAlign: "center",
+              padding: "3rem",
+              backgroundColor: "#f9fafb",
+              borderRadius: "0.5rem",
+              color: "#6b7280",
+            }}
+          >
+            <p style={{ fontSize: "1rem", marginBottom: "0.5rem" }}>
+              No payment methods added yet.
+            </p>
+            <p style={{ fontSize: "0.875rem" }}>
+              Add your first payment method above.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
