@@ -8,7 +8,7 @@
     margin-bottom: 10px;
 }
 
-.deliveryButton{
+#deliveryButton{
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -17,4 +17,28 @@
     font-size: 1.2em;
     margin: 4px;
     text-align: left;
+}
+#deliveryButton.active{
+    outline: white solid 1px !important;
+}
+
+#deliveryButton:focus{
+    outline: none;
+}
+
+.orderSummary{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.orderSummary > label{
+    width: 50%;
+    text-align: start;
+}
+
+.orderSummary > span{
+    width: 50%;
+    text-align: end;
 }

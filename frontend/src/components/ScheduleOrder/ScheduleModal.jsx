@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function ScheduleModal({ onClose }) {
+export default function ScheduleModal({ onClose, handleSchedule }) {
     const [orderDate, setOrderDate] = useState(new Date());
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -19,10 +19,15 @@ export default function ScheduleModal({ onClose }) {
             setError(true);
         }else{
             console.log("Success!");
+            handleSchedule(orderDate);
             onClose();
         } 
     }
 
+    const handleCancel = () =>{
+        handleSchedule(null);
+        onClose();
+    }
 
     return (
         <div className="modal-back" onClick={onClose}>   
@@ -46,8 +51,8 @@ export default function ScheduleModal({ onClose }) {
                 </div>
                 :null}
                 <div>
-                    <button onClick={validateDate}>Submit</button>
-                    <button onClick={onClose}>
+                    <button onClick={() => validateDate()}>Submit</button>
+                    <button onClick={() => handleCancel()}>
                         Cancel
                     </button>
                 </div>
