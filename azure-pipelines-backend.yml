@@ -80,24 +80,17 @@ jobs:
       # python manage.py collectstatic --noinput
     displayName: 'Build Django Project'
 
-- job: Deploy
-  dependsOn: Build
-  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'prod'))
-  steps:
-  - script: |
-      echo "Deploying Django project..."
-      # Add your deployment steps here, for example:
-      # ansible-playbook deploy.yml
-    displayName: 'Deploy Django Project'
-    
+# Adding stages as a top-level key
+stages:
 - stage: BackendDeploy
   displayName: 'Deploy Django Project'
   dependsOn: Build
+  condition: eq(variables['Build.SourceBranchName'], 'prod') # Deploy only on prod branch
   jobs:
   - deployment: DeployBackend
     pool:
       vmImage: ubuntu-latest
-    environment: $(Build.SourceBranchName)  # Adjust environment as needed
+    environment: 'production'  # Adjust environment as needed
     strategy:
       runOnce:
         deploy:
@@ -107,4 +100,3 @@ jobs:
               # Your deployment commands here, e.g.:
               # ansible-playbook deploy.yml
             displayName: 'Deploy Django Project'
-    condition: eq(variables['Build.SourceBranchName'], 'prod') # Deploy only on prod branch
