@@ -1,8 +1,12 @@
 // PaymentPage.jsx
 import React from "react";
 import PaymentComponent from "../components/Payment/PaymentComponent";
+import { useParams } from "react-router-dom";
 
 const PaymentPage = () => {
+  let params = useParams()
+  console.log(params);
+  
   return (
     <div
       style={{
@@ -29,7 +33,7 @@ const PaymentPage = () => {
         >
           Payment Management
         </h1>
-        <PaymentComponent />
+        <PaymentComponent params={params}/>
       </div>
     </div>
   );

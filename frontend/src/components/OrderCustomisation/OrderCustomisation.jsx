@@ -147,7 +147,9 @@ const OrderCustomisation = () => {
                             setInstructions={setInstructions}/>
                     </div>
                     <div>
-                        <button onClick={()=> navigate('/Cart/Schedule', {state: {order: orders, instructions: instructions, total: total}})}>
+                        <button 
+                            disabled={orders.length != 0 ? false : true}
+                            onClick={()=> navigate('/Cart/Schedule', {state: {order: orders, instructions: instructions, total: total}}) }>
                             Submit Order
                         </button>
                     </div>

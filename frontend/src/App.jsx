@@ -9,7 +9,8 @@ import PaymentPage from "./pages/PaymentPage";
 import PaymentConfirmationPage from "./pages/PaymentConfirmationPage";
 import AddressPage from "./pages/AddressPage";
 import OrderPage from './pages/OrderPage';
-import SchedulePage from './pages/SchedulePage'
+import SchedulePage from './pages/SchedulePage';
+import PastOrdersPage from './pages/PastOrdersPage';
 
 function AppContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -96,7 +97,7 @@ function AppContent() {
           />
         }
       />
-      <Route path="payment" element={<PaymentPage />} />
+      <Route path="payment/:total?/" element={<PaymentPage />} />
       <Route
         path="/payment-confirmation"
         element={<PaymentConfirmationPage />}
@@ -105,6 +106,7 @@ function AppContent() {
 
       <Route path="/Cart" /* element={isLoggedIn ? <OrderCustomisation/> : <LoginSignup/>}  */ element={<OrderPage/> }/>
       <Route path="/Cart/Schedule" element={<SchedulePage/>}/>
+      <Route path="/Orders" element={<PastOrdersPage/>}/>
     </Routes>
   );
 }

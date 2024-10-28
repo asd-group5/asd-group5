@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getValidToken } from "../../utils/auth";
 
-const PaymentComponent = () => {
+const PaymentComponent = ({params}) => {
   const BASE_URL = "http://localhost:8000";
   const navigate = useNavigate();
 
@@ -16,7 +16,7 @@ const PaymentComponent = () => {
     card_holder_name: "",
     is_default: false,
   });
-  const [paymentAmount, setPaymentAmount] = useState("");
+  const [paymentAmount, setPaymentAmount] = useState(params.total);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);

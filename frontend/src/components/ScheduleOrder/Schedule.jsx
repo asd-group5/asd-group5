@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import DeliveryOptions from './DeliveryOptions';
 import orderService from '../../services/order.jsx'
 import { getValidToken } from "../../utils/auth";
 import './Schedule.css'
 
 const Schedule = ({order, instructions, total}) =>{
+    const navigate = useNavigate();
     const [isPriority, setIsPriority] = useState(false);
     const [isStandard, setIsStandard] = useState(false);
     const [schedule, setSchedule] = useState(null);
@@ -49,29 +51,36 @@ const Schedule = ({order, instructions, total}) =>{
 
     const handleSubmit = async () =>{
         let res = processOrder();
-        const token = await getValidToken();
+        try {
+            const token = await getValidToken();
 
-        let data = JSON.stringify({
-            "total": res.total,
-            "delivery": res.delivery,
-            "date": res.schedule,
-            "instruction": res.instructions
-        })
+            let data = JSON.stringify({
+                "total": res.total,
+                "delivery": res.delivery,
+                "date": res.schedule,
+                "instruction": res.instructions
+            })
 
-        orderService.process(data, token).then((response) => {
-        console.log(JSON.stringify(response.data));
-        })
-        .catch((error) => {
-        console.log(error);
-        });
-        
+            orderService.process(data, token).then((response) => {
+                console.log(JSON.stringify(response.data));
+                alert("Success! Order: " + response.data + " created! Redirecting to payment!")
+                navigate('/payment/' + res.total)
+            })
+            .catch((error) => {
+                alert(error);
+                console.log(error);
+            });
+        } catch (error) {
+            alert(error);
+        }
     }
+
 return(
     <div>
         <h2>Order Details</h2>
         {order.map((item) =>{
             return(
-                <p>
+                <div>
                     <dl>
                         <dt>
                             <span style={{display: 'flex', justifyContent: 'space-between'}}>
@@ -98,11 +107,17 @@ return(
                     {item.hasOwnProperty("custom") ? 
                         item['custom'].map((element) =>(
                             <li>
-                            {element['option_name'] + " $" + element['option_price'] + " " + element['checked'] + " "}
+                            {element['option_name'] + " $" + element['option_price']}
+                            {element['checked'] ? 
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-check2" viewBox="0 0 16 16">
+                                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0"/>
+                            </svg> : <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                            </svg>}
                             </li>)) 
                         :null}
                     </ul>
-                </p>
+                </div>
             )
         })}
 
@@ -134,14 +149,16 @@ return(
         {instructions ? 
                     <p>Instructions provided: {instructions}</p> : 
                     <p>No instructions provided</p>}
-
+        
         <div>
+            { isStandard || isPriority || schedule ? <>
             Delivery Option: {isPriority ? "Priority" : null}
             {isStandard ? "Standard" : null}
             {schedule ? <> Scheduled for <strong style={{wordWrap: 'break-word'}}>
                 {schedule.toLocaleString("en-AU")}
             </strong>
             </> : null}
+            </>: "Please Select Delivery Option!"}
         </div>
         <button 
             disabled={isPriority || isStandard || schedule ? false : true}
