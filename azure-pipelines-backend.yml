@@ -1,6 +1,9 @@
 trigger:
-  - main
-  - develop
+  branches:
+    include:
+      - main
+      - dev
+      - prod
 
 pool:
   vmImage: ubuntu-latest
@@ -24,11 +27,6 @@ jobs:
     inputs:
       versionSpec: '$(PYTHON_VERSION)'
       architecture: 'x64'
-
-  - script: |
-      echo "PYTHON_VERSION=$(PYTHON_VERSION)"
-      echo "projectRoot=$(projectRoot)"
-    displayName: 'Debug Variable Output'
 
   - task: PythonScript@0
     displayName: 'Export project path'
@@ -84,7 +82,7 @@ jobs:
 
 - job: Deploy
   dependsOn: Build
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'prod'))
   steps:
   - script: |
       echo "Deploying Django project..."

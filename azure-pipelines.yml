@@ -1,6 +1,9 @@
 trigger:
-  - main
-  - develop
+  branches:
+    include:
+      - main
+      - dev
+      - prod
 
 pool:
   vmImage: ubuntu-latest
@@ -25,7 +28,7 @@ stages:
         restoreKeys: |
           npm | "$(Agent.OS)"
         path: '$(frontendDirectory)/node_modules'
-      displayName: Cache npm packages
+      displayName: 'Cache npm packages'
 
     - task: Npm@1
       displayName: 'npm ci'
@@ -64,14 +67,14 @@ stages:
     - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
       artifact: drop
     
-- stage: 'Deploy'
+- stage: Deploy
   displayName: 'Deploy the web application'
   dependsOn: Build
   jobs:
   - deployment: Deploy
     pool:
-      vmImage: 'ubuntu-20.04'
-    environment: dev
+      vmImage: ubuntu-20.04
+    environment: dev  # change to production in prod branch
     variables:
       - group: Release
     strategy:
@@ -83,6 +86,7 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Azure App Service Deploy: website'
             inputs:
-              azureSubscription: 'ASDRestaurant'  # Name of your service connections
-              appName: '$(WebAppName)'  # Name of your Azure App Servicess
+              azureSubscription: 'ASDRestaurant'  # Name of your service connection
+              appName: '$(WebAppName)'  # Name of your Azure App Service
               package: '$(Pipeline.Workspace)/drop/*.zip'
+    condition: eq(variables['Build.SourceBranchName'], 'prod') # Deploy only on prod branch
