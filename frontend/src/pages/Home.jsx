@@ -22,6 +22,8 @@ export default function Layout({ isLoggedIn, username, handleLogout, checkLogged
                             <>
                                 <li><Link to="/payment">Payment</Link></li>
                                 <li><Link to="/address">Address</Link></li>
+                                <li><Link to="/orders">Orders</Link></li>
+                                <li><Link to="/cart">Cart</Link></li>
                             </>
                         ) : (
                             <>

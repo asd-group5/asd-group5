@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import DeliveryOptions from './DeliveryOptions';
 import orderService from '../../services/order.jsx'
 import { getValidToken } from "../../utils/auth";
 import './Schedule.css'
 
 const Schedule = ({order, instructions, total}) =>{
+    const navigate = useNavigate();
     const [isPriority, setIsPriority] = useState(false);
     const [isStandard, setIsStandard] = useState(false);
     const [schedule, setSchedule] = useState(null);
@@ -61,7 +63,8 @@ const Schedule = ({order, instructions, total}) =>{
 
             orderService.process(data, token).then((response) => {
                 console.log(JSON.stringify(response.data));
-                alert("Success! Order: " + response.data + " created!")
+                alert("Success! Order: " + response.data + " created! Redirecting to payment!")
+                navigate('/payment/' + res.total)
             })
             .catch((error) => {
                 alert(error);

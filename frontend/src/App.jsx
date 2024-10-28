@@ -97,7 +97,7 @@ function AppContent() {
           />
         }
       />
-      <Route path="payment" element={<PaymentPage />} />
+      <Route path="payment/:total?/" element={<PaymentPage />} />
       <Route
         path="/payment-confirmation"
         element={<PaymentConfirmationPage />}
