@@ -90,26 +90,21 @@ jobs:
       # ansible-playbook deploy.yml
     displayName: 'Deploy Django Project'
     
-- stage: Deploy
-  displayName: 'Deploy the web application'
+- stage: BackendDeploy
+  displayName: 'Deploy Django Project'
   dependsOn: Build
   jobs:
-  - deployment: Deploy
+  - deployment: DeployBackend
     pool:
-      vmImage: ubuntu-20.04
-    environment: dev  # change to production in prod branch
-    variables:
-      - group: Release
+      vmImage: ubuntu-latest
+    environment: $(Build.SourceBranchName)  # Adjust environment as needed
     strategy:
       runOnce:
         deploy:
           steps:
-          - download: current
-            artifact: drop
-          - task: AzureWebApp@1
-            displayName: 'Azure App Service Deploy: website'
-            inputs:
-              azureSubscription: 'ASDRestaurant'  # Name of your service connection
-              appName: '$(WebAppName)'  # Name of your Azure App Service
-              package: '$(Pipeline.Workspace)/drop/*.zip'
+          - script: |
+              echo "Deploying Django project..."
+              # Your deployment commands here, e.g.:
+              # ansible-playbook deploy.yml
+            displayName: 'Deploy Django Project'
     condition: eq(variables['Build.SourceBranchName'], 'prod') # Deploy only on prod branch
