@@ -92,8 +92,15 @@ stages:
       runOnce:
         deploy:
           steps:
-          - download: current
-            artifact: drop  # This assumes the frontend creates the artifact named 'drop'
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: 'specific'
+              project: 'Agile Planning - Demo'
+              pipeline: '1'  # Frontend pipeline ID
+              buildVersionToDownload: 'latest'
+              artifactName: 'drop'
+              targetPath: '$(Pipeline.Workspace)/drop'
+
           - task: AzureWebApp@1
             displayName: 'Azure App Service Deploy: Django Project'
             inputs:
