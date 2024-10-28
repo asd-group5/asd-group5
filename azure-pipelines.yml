@@ -66,27 +66,31 @@ stages:
 
     - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
       artifact: drop
-    
+    stages:
+- stage: TestAndBuild
+  displayName: 'Test and Build'
+  jobs:
+    # (Your Test job here as defined in your YAML)
+
 - stage: Deploy
-  displayName: 'Deploy the web application'
-  dependsOn: Build
+  displayName: 'Deploy Django Project'
+  dependsOn: TestAndBuild
+  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'prod'))
   jobs:
   - deployment: Deploy
     pool:
       vmImage: ubuntu-20.04
-    environment: dev  # change to production in prod branch
+    environment: 'production'
     variables:
       - group: Release
     strategy:
       runOnce:
         deploy:
           steps:
-          - download: current
-            artifact: drop
+          - download: current  # Only required if you're pulling artifacts
           - task: AzureWebApp@1
-            displayName: 'Azure App Service Deploy: website'
+            displayName: 'Azure App Service Deploy: Shared Frontend and Backend'
             inputs:
-              azureSubscription: 'ASDRestaurant'  # Name of your service connection
-              appName: '$(WebAppName)'  # Name of your Azure App Service
+              azureSubscription: 'ASDRestaurant'  # The shared service connection
+              appName: '$(WebAppName)'            # Your Azure App Service name
               package: '$(Pipeline.Workspace)/drop/*.zip'
-    condition: eq(variables['Build.SourceBranchName'], 'prod') # Deploy only on prod branch
