@@ -2,111 +2,26 @@ trigger:
   branches:
     include:
       - main
-      - develop
+      - dev
+      - prod
 
 pool:
   vmImage: ubuntu-latest
 
 variables:
-  system.debug: true
-  PYTHON_VERSION: '3.12'
+  nodeVersion: '18.17.0'
+  frontendDirectory: 'frontend'
 
 stages:
-- stage: TestAndBuild
-  displayName: 'Test and Build'
-  jobs:
-  - job: Test
-    strategy:
-      matrix:
-        Python311:
-          PYTHON_VERSION: '3.11'
-        Python312:
-          PYTHON_VERSION: '3.12'
-      maxParallel: 2
-
-    steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '$(PYTHON_VERSION)'
-        architecture: 'x64'
-
-    - script: |
-        echo "PYTHON_VERSION=$(PYTHON_VERSION)"
-        echo "projectRoot=$(projectRoot)"
-      displayName: 'Debug Variable Output'
-
-    - task: PythonScript@0
-      displayName: 'Export project path'
-      inputs:
-        scriptSource: 'inline'
-        script: |
-          """Search all subdirectories for `manage.py`."""
-          from glob import iglob
-          from os import path
-          manage_py = next(iglob(path.join('**', 'manage.py'), recursive=True), None)
-          if not manage_py:
-              raise SystemExit('Could not find a Django project')
-          project_location = path.dirname(path.abspath(manage_py))
-          print('Found Django project in', project_location)
-          print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
-
-    - script: |
-        python -m pip install --upgrade pip setuptools wheel
-        pip install -r $(projectRoot)/requirements.txt
-        pip install unittest-xml-reporting coverage
-      displayName: 'Install prerequisites'
-
-    - script: |
-        pushd '$(projectRoot)'
-        python manage.py check
-        coverage run manage.py test --testrunner xmlrunner.extra.djangotestrunner.XMLTestRunner --no-input --parallel
-        coverage xml
-        coverage html
-      displayName: 'Run Django tests with coverage'
-      workingDirectory: '$(projectRoot)'
-
-    - task: PublishTestResults@2
-      inputs:
-        testResultsFiles: "**/TEST-*.xml"
-        testRunTitle: 'Python $(PYTHON_VERSION)'
-      condition: succeededOrFailed()
-
-    - task: PublishCodeCoverageResults@2
-      inputs:
-        codeCoverageTool: 'cobertura'
-        summaryFileLocation: '$(projectRoot)/coverage.xml'
-        reportDirectory: '$(projectRoot)/htmlcov'
-
-  - job: Build
-    dependsOn: Test
-    condition: succeeded()
-    steps:
-    - script: |
-        echo "Building Django project..."
-        # Example of collecting static files for Django
-        python manage.py collectstatic --noinput
-      displayName: 'Build Django Project'
-
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(projectRoot)'
-        includeRootFolder: false
-        archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-        replaceExistingArchive: true
-
-    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-      artifact: drop
-
 - stage: Deploy
-  displayName: 'Deploy Django Project'
-  dependsOn: TestAndBuild
-  condition: eq(variables['Build.SourceBranchName'], 'main')  # Deploy only on main branch
+  displayName: 'Deploy the web application'
   jobs:
   - deployment: Deploy
     pool:
-      vmImage: ubuntu-latest
-    environment: production  # Adjust environment as needed
+      vmImage: ubuntu-20.04
+    environment: dev  # change to production for the prod branch
+    variables:
+      - group: Release
     strategy:
       runOnce:
         deploy:
@@ -114,8 +29,9 @@ stages:
           - download: current
             artifact: drop
           - task: AzureWebApp@1
-            displayName: 'Azure App Service Deploy: Django Project'
+            displayName: 'Azure App Service Deploy: website'
             inputs:
               azureSubscription: 'ASDRestaurant'  # Name of your Azure service connection
               appName: '$(WebAppName)'  # Name of your Azure App Service
               package: '$(Pipeline.Workspace)/drop/*.zip'
+    condition: eq(variables['Build.SourceBranchName'], 'main')  # Deploy only on main branch
