@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
-    "custom.apps.CustomConfig"
+    "custom.apps.CustomConfig",
+    "orders.apps.OrdersConfig"
 ]
 
 MIDDLEWARE = [
