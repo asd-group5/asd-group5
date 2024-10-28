@@ -1,0 +1,42 @@
+h4{
+    margin: 0;
+}
+
+dl{
+    margin: 0;
+}
+
+ul{
+    margin-bottom: 0 !important;
+}
+
+.errorPopup{
+    position: relative; 
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem; 
+    padding-left: 1rem;
+    padding-right: 1rem; 
+    border-radius: 0.25rem; 
+    border-width: 1px; 
+    border-color: #F87171; 
+    color: #B91C1C; 
+    background-color: #FEE2E2; 
+}
+
+.errorMessage{
+    display: block;    
+}
+
+.error{
+    position: absolute; 
+    top: 0; 
+    right: 0; 
+    bottom: 0; 
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem; 
+    padding-left: 1rem;
+    padding-right: 1rem; 
+}
+.error > svg{
+    cursor: pointer;
+}
