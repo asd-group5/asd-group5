@@ -2,8 +2,7 @@ trigger:
   branches:
     include:
       - main
-      - dev
-      - prod
+      - develop
 
 pool:
   vmImage: ubuntu-latest
@@ -30,6 +29,11 @@ stages:
       inputs:
         versionSpec: '$(PYTHON_VERSION)'
         architecture: 'x64'
+
+    - script: |
+        echo "PYTHON_VERSION=$(PYTHON_VERSION)"
+        echo "projectRoot=$(projectRoot)"
+      displayName: 'Debug Variable Output'
 
     - task: PythonScript@0
       displayName: 'Export project path'
@@ -79,25 +83,39 @@ stages:
     steps:
     - script: |
         echo "Building Django project..."
-        # Add your build steps here, for example:
-        # python manage.py collectstatic --noinput
+        # Example of collecting static files for Django
+        python manage.py collectstatic --noinput
       displayName: 'Build Django Project'
 
-- stage: BackendDeploy
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(projectRoot)'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+        replaceExistingArchive: true
+
+    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      artifact: drop
+
+- stage: Deploy
   displayName: 'Deploy Django Project'
   dependsOn: TestAndBuild
-  condition: eq(variables['Build.SourceBranchName'], 'prod') # Deploy only on prod branch
+  condition: eq(variables['Build.SourceBranchName'], 'main')  # Deploy only on main branch
   jobs:
-  - deployment: DeployBackend
+  - deployment: Deploy
     pool:
       vmImage: ubuntu-latest
-    environment: 'production'  # Adjust environment as needed
+    environment: production  # Adjust environment as needed
     strategy:
       runOnce:
         deploy:
           steps:
-          - script: |
-              echo "Deploying Django project..."
-              # Your deployment commands here, e.g.:
-              # ansible-playbook deploy.yml
-            displayName: 'Deploy Django Project'
+          - download: current
+            artifact: drop
+          - task: AzureWebApp@1
+            displayName: 'Azure App Service Deploy: Django Project'
+            inputs:
+              azureSubscription: 'ASDRestaurant'  # Name of your Azure service connection
+              appName: '$(WebAppName)'  # Name of your Azure App Service
+              package: '$(Pipeline.Workspace)/drop/*.zip'
