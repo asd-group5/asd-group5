@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import DeliveryOptions from './DeliveryOptions';
+import orderService from '../../services/order.jsx'
+import { getValidToken } from "../../utils/auth";
 import './Schedule.css'
 
 const Schedule = ({order, instructions, total}) =>{
@@ -12,6 +14,56 @@ const Schedule = ({order, instructions, total}) =>{
         setIsPriority(false);
         setIsStandard(false);
         console.log(date);
+    }
+
+    const processOrder = () =>{
+        if(isPriority){
+            return {
+                "order": order,
+                "delivery": "Priority",
+                "total": total + 7,
+                "instructions": instructions
+            }
+        }else if(isStandard){
+            return {
+                "order": order,
+                "delivery": "Standard",
+                "total": total + 3,
+                "instructions": instructions
+            }
+        }else{
+            
+            const time = schedule.toLocaleTimeString('en-AU', {hour12: false});
+            const date = schedule.getFullYear() + "-" + ('0' + (schedule.getMonth()+1)).slice(-2)+ "-" + schedule.getDate()
+            const fullDate = date + " " + time;
+            
+            return{
+                "order": order,
+                "delivery": "Schedule",
+                "total": total + 3,
+                "instructions": instructions,
+                "schedule": fullDate
+            }
+        }
+    }
+
+    const handleSubmit = async () =>{
+        let res = processOrder();
+        const token = await getValidToken();
+
+        let data = JSON.stringify({
+            "total": res.total,
+            "delivery": res.delivery,
+            "date": res.schedule,
+            "instruction": res.instructions
+        })
+
+        orderService.process(data, token).then((response) => {
+        console.log(JSON.stringify(response.data));
+        })
+        .catch((error) => {
+        console.log(error);
+        });
         
     }
 return(
@@ -89,10 +141,11 @@ return(
             {schedule ? <> Scheduled for <strong style={{wordWrap: 'break-word'}}>
                 {schedule.toLocaleString("en-AU")}
             </strong>
-            
             </> : null}
         </div>
-        <button disabled={isPriority || isStandard || schedule ? false : true}>
+        <button 
+            disabled={isPriority || isStandard || schedule ? false : true}
+            onClick={() => {handleSubmit()}}>
             Proceed to Checkout
         </button>
     </div>

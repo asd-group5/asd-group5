@@ -24,7 +24,8 @@ urlpatterns = [
     path('api/', include("accounts.urls")),
     path('api/address/', include('address.urls')),
     path('api/payment/', include('payment.urls')),
-    path('api/custom/', include("custom.urls"))
+    path('api/custom/', include("custom.urls")),
+    path('api/order/', include("orders.urls"))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 admin.site.index_title = "Restaurant"
