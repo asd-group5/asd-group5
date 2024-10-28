@@ -10,6 +10,12 @@ ul{
     margin-bottom: 0 !important;
 }
 
+li{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .errorPopup{
     position: relative; 
     padding-top: 0.75rem;

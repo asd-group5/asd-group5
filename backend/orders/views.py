@@ -2,6 +2,7 @@ from .models import Order, OrderItem
 from custom.models import MenuItem
 
 from django.core import serializers
+from django.forms.models import model_to_dict
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -34,8 +35,13 @@ class PopulateOrder(APIView):
 class ViewOrders(APIView):
     def get(self, request):
         user = request.user
-        orders_list = Order.objects.filter(user=user).all()
-        orders_list_json = serializers.serialize('json', orders_list)
-        return Response(orders_list_json, status=status.HTTP_200_OK)
+        orders_list = Order.objects.filter(user=user).values_list('id', flat=True)
+        return Response(orders_list, status=status.HTTP_200_OK)
+
+class ViewOrderDetail(APIView):
+    def get(self, request, orderID):
+        order = Order.objects.get(pk=orderID)
+        obj = model_to_dict(order)
+        return Response(obj, status=status.HTTP_200_OK)
 
 

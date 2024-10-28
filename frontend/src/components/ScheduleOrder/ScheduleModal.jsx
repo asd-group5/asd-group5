@@ -50,7 +50,7 @@ export default function ScheduleModal({ onClose, handleSchedule }) {
                     </span>
                 </div>
                 :null}
-                <div>
+                <div style={{display: 'flex', flexDirection: 'column', gap: '5px'}}>
                     <button onClick={() => validateDate()}>Submit</button>
                     <button onClick={() => handleCancel()}>
                         Cancel
