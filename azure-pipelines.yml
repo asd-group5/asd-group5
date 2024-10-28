@@ -83,6 +83,6 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Azure App Service Deploy: website'
             inputs:
-              azureSubscription: 'ASDRestaurant'  # Name of your service connection
-              appName: '$(WebAppName)'  # Name of your Azure App Servicesds
+              azureSubscription: 'ASDRestaurant'  # Name of your service connections
+              appName: '$(WebAppName)'  # Name of your Azure App Servicess
               package: '$(Pipeline.Workspace)/drop/*.zip'
