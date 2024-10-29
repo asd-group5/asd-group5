@@ -707,7 +707,7 @@ const PaymentComponent = () => {
                   </div>
                 )}
               </div>
-              
+
               {/* Select Payment Method */}
               <div>
                 <label
