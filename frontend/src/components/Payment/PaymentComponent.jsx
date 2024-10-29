@@ -707,7 +707,7 @@ const PaymentComponent = () => {
                   </div>
                 )}
               </div>
-
+              
               {/* Select Payment Method */}
               <div>
                 <label
@@ -752,10 +752,7 @@ const PaymentComponent = () => {
                       value={method.id}
                       style={{ color: "#111827" }}
                     >
-                      {method.card_type} - ****{" "}
-                      {method.card_number
-                        ? method.card_number.slice(-4)
-                        : "XXXX"}
+                      {method.card_type} - {method.card_number_masked}
                     </option>
                   ))}
                 </select>
